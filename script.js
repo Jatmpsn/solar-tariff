@@ -5,7 +5,7 @@
 // Rates loaded live from Google Sheets CSV, with hardcoded fallback
 // =============================================================================
 
-const TARIFF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_FtUp6LzKp_atFvdPA2Y00jImuw0lTv9ViWMjspotv-H1SWFq0VL8sOnVkd_b5sUef877d5ZS-Cch/pub?gid=598980415&single=true&output=csv";
+const TARIFF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTt3OoI-ugxyV4pDC7p8uDHYSVrELZO2u32rYWNVLq1Np-X6gV0P0X9AqaPrjLYyA/pub?gid=598980415&single=true&output=csv";
 
 const FALLBACK_BUNDLED_TARIFFS = [
   {
