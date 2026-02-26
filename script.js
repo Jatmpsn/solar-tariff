@@ -1,4 +1,4 @@
-// =============================================================================
+// // =============================================================================
 // GREEN TARIFF MARKETPLACE — Calculation Engine v3.2
 // Half-hourly energy modelling with solar, battery, and tariff cost engine
 // Default: bundled tariffs (Col C = "Both") | Toggle: split import & export
