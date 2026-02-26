@@ -252,7 +252,7 @@ function buildExportTariff(row) {
 // ---------------------------------------------------------------------------
 async function loadTariffs() {
   try {
-    const resp = await fetch(TARIFF_SHEET_CSV_URL);
+    const resp = await fetch(TARIFF_SHEET_CSV_URL + "&cachebust=" + Date.now());
     if (!resp.ok) throw new Error("Sheet fetch failed: " + resp.status);
     const text = await resp.text();
     const rows = parseCSV(text);
