@@ -524,15 +524,15 @@ function renderSummary(inputs, curves, source) {
 // ---------------------------------------------------------------------------
 function renderToggle(isSplit) {
   return '\
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap;">\
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;">\
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">\
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;flex-shrink:0;">\
         <span style="position:relative;display:inline-block;width:44px;height:24px;background:' + (isSplit ? "#2d6a4f" : "#ccc") + ';border-radius:12px;transition:background 0.2s;flex-shrink:0;">\
           <span style="position:absolute;top:2px;left:' + (isSplit ? "22px" : "2px") + ';width:20px;height:20px;background:white;border-radius:50%;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>\
         </span>\
         <input type="checkbox" id="view-toggle" ' + (isSplit ? "checked" : "") + ' style="position:absolute;opacity:0;pointer-events:none;" />\
         <span style="font-size:0.88rem;color:#333;font-weight:500;">Show import and export tariffs separately</span>\
       </label>\
-      <button id="learn-more-btn" style="background:none;border:none;color:#2d6a4f;font-size:0.82rem;cursor:pointer;text-decoration:underline;padding:0;font-weight:500;">Learn more</button>\
+      <button id="learn-more-btn" style="background:none;border:none;color:#2d6a4f;font-size:0.82rem;cursor:pointer;text-decoration:underline;padding:0;font-weight:500;white-space:nowrap;">Learn more</button>\
     </div>\
     <div id="learn-more-callout" style="display:none;background:#f0f7f2;border:1px solid #b7d8c4;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:0.84rem;color:#333;line-height:1.6;">\
       <div style="font-weight:700;margin-bottom:6px;color:#1b4332;">Why are there two tariffs?</div>\
