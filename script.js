@@ -5,7 +5,7 @@
 // Rates loaded live from Google Sheets CSV, with hardcoded fallback
 // =============================================================================
 
-const TARIFF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTt3OoI-ugxyV4pDC7p8uDHYSVrELZO2u32rYWNVLq1Np-X6gV0P0X9AqaPrjLYyA/pub?gid=598980415&single=true&output=csv";
+const TARIFF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_FtUp6LzKp_atFvdPA2Y00jImuw0lTv9ViWMjspotv-H1SWFq0VL8sOnVkd_b5sUef877d5ZS-Cch/pub?gid=245561990&single=true&output=csv";
 
 const FALLBACK_BUNDLED_TARIFFS = [
   {
@@ -85,20 +85,53 @@ const FALLBACK_EXPORT_TARIFFS = [
 // CSV PARSER
 // ---------------------------------------------------------------------------
 function parseCSV(text) {
-  const lines = text.trim().split("\n");
-  const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
-  return lines.slice(1).map(line => {
-    const values = [];
-    let current = "";
-    let inQuotes = false;
-    for (const char of line) {
-      if (char === '"') { inQuotes = !inQuotes; }
-      else if (char === "," && !inQuotes) { values.push(current.trim()); current = ""; }
-      else { current += char; }
+  // Parse CSV properly handling multi-line quoted fields
+  var records = [];
+  var current = "";
+  var inQuotes = false;
+  var fields = [];
+
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (i + 1 < text.length && text[i + 1] === '"') {
+          current += '"'; i++; // escaped quote
+        } else {
+          inQuotes = false; // end of quoted field
+        }
+      } else {
+        current += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ',') {
+        fields.push(current.trim());
+        current = "";
+      } else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && i + 1 < text.length && text[i + 1] === '\n') i++;
+        fields.push(current.trim());
+        current = "";
+        if (fields.length > 1 || fields[0] !== "") records.push(fields);
+        fields = [];
+      } else {
+        current += ch;
+      }
     }
-    values.push(current.trim());
-    const row = {};
-    headers.forEach((h, i) => { row[h] = (values[i] || "").trim(); });
+  }
+  if (current || fields.length > 0) {
+    fields.push(current.trim());
+    if (fields.length > 1 || fields[0] !== "") records.push(fields);
+  }
+
+  if (records.length === 0) return [];
+  // Normalise headers: collapse any newlines into spaces
+  var headers = records[0].map(function(h) { return h.replace(/[\r\n]+/g, " ").trim(); });
+
+  return records.slice(1).map(function(fields) {
+    var row = {};
+    headers.forEach(function(h, i) { row[h] = (fields[i] || "").trim(); });
     return row;
   });
 }
