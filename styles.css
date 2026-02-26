@@ -1,0 +1,393 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #f7f9f7;
+  color: #333;
+}
+
+/* Navbar */
+.navbar {
+  background: white;
+  border-bottom: 1px solid #eee;
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1b4332;
+}
+
+.nav-cta {
+  background: #2d6a4f;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.nav-cta:hover {
+  background: #1b4332;
+}
+
+/* Hero */
+.hero {
+  background: white;
+  padding: 80px 20px;
+}
+
+.hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.hero-left {
+  flex: 1;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  line-height: 1.2;
+  color: #1b4332;
+  margin-bottom: 16px;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.accounts-intro {
+  font-weight: 600;
+  color: #333;
+  margin-top: 20px;
+}
+
+.tick-list {
+  list-style: none;
+  margin: 12px 0 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tick-list li {
+  font-size: 1rem;
+  color: #333;
+}
+
+.hero-btn {
+  display: inline-block;
+  background: #2d6a4f;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.hero-btn:hover {
+  background: #1b4332;
+}
+
+/* Energy Graphic */
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.energy-graphic {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 360px;
+  width: 100%;
+}
+
+.graphic-card {
+  background: #f0f7f4;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #e0ede6;
+}
+
+.graphic-card.highlight {
+  background: #2d6a4f;
+  border-color: #2d6a4f;
+}
+
+.graphic-card.highlight .graphic-label,
+.graphic-card.highlight .graphic-value {
+  color: white;
+}
+
+.graphic-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.graphic-label {
+  font-size: 0.78rem;
+  color: #888;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.graphic-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1b4332;
+}
+
+/* How it works */
+.how-it-works {
+  padding: 80px 20px;
+  text-align: center;
+  background: #f7f9f7;
+}
+
+.how-it-works h2 {
+  font-size: 1.8rem;
+  color: #1b4332;
+  margin-bottom: 50px;
+}
+
+.steps {
+  display: flex;
+  gap: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.step {
+  flex: 1;
+  min-width: 220px;
+  max-width: 260px;
+  background: white;
+  border-radius: 16px;
+  padding: 30px 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.step-icon {
+  font-size: 2.4rem;
+  margin-bottom: 14px;
+}
+
+.step h3 {
+  font-size: 1rem;
+  color: #1b4332;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.step p {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Form Section */
+.form-section {
+  padding: 80px 20px;
+  text-align: center;
+  background: white;
+}
+
+.form-section h2 {
+  font-size: 1.8rem;
+  color: #1b4332;
+  margin-bottom: 8px;
+}
+
+.form-intro {
+  color: #888;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+form {
+  background: #f7f9f7;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+input, select {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  background: white;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #2d6a4f;
+}
+
+button {
+  background-color: #2d6a4f;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background-color: #1b4332;
+}
+
+/* Results */
+#results {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+h2 {
+  color: #1b4332;
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 20px 0;
+}
+
+.tariff-card {
+  background: white;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+}
+
+.tariff-card h3 {
+  font-size: 1.1rem;
+  color: #1b4332;
+  margin-bottom: 4px;
+}
+
+.tariff-card .supplier {
+  font-size: 0.85rem;
+  color: #999;
+  margin-bottom: 10px;
+}
+
+.tariff-card p {
+  font-size: 0.92rem;
+  color: #555;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.tariff-card .export {
+  font-size: 0.9rem;
+  color: #2d6a4f;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.tariff-card a {
+  display: inline-block;
+  margin-top: 14px;
+  color: #2d6a4f;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.tariff-card a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+footer {
+  background: #1b4332;
+  color: white;
+  text-align: center;
+  padding: 30px 20px;
+  font-size: 0.9rem;
+}
+
+footer p {
+  color: rgba(255,255,255,0.8);
+  text-align: center;
+  margin: 0;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hero-inner {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .energy-graphic {
+    max-width: 100%;
+  }
+
+  .steps {
+    flex-direction: column;
+    align-items: center;
+  }
+}

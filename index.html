@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Green Tariff Marketplace</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-inner">
+        <div class="nav-logo">🌿 Green Tariff Marketplace</div>
+        <a href="#form-section" class="nav-cta">Find My Tariff</a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-inner">
+
+        <div class="hero-left">
+          <h1>Find the best energy tariff for your solar and battery system</h1>
+          <p class="hero-sub">Most comparison sites don't account for your solar panels or battery storage. Ours does.</p>
+          <p class="hero-sub accounts-intro">Our comparison tool accounts for:</p>
+          <ul class="tick-list">
+            <li>✅ Your solar panel size and location</li>
+            <li>✅ Your battery storage capacity</li>
+            <li>✅ Your typical household consumption</li>
+            <li>✅ Export rates and time-of-use tariffs</li>
+          </ul>
+          <a href="#form-section" class="hero-btn">Find My Best Tariff →</a>
+        </div>
+
+        <div class="hero-right">
+          <div class="energy-graphic">
+            <div class="graphic-card">
+              <div class="graphic-icon">☀️</div>
+              <div class="graphic-label">Solar Generation</div>
+              <div class="graphic-value">18.4 kWh/day</div>
+            </div>
+            <div class="graphic-card">
+              <div class="graphic-icon">🔋</div>
+              <div class="graphic-label">Battery Storage</div>
+              <div class="graphic-value">10 kWh</div>
+            </div>
+            <div class="graphic-card highlight">
+              <div class="graphic-icon">⚡</div>
+              <div class="graphic-label">Best Tariff Match</div>
+              <div class="graphic-value">Octopus Flux</div>
+            </div>
+            <div class="graphic-card">
+              <div class="graphic-icon">💷</div>
+              <div class="graphic-label">Export Rate</div>
+              <div class="graphic-value">24p/kWh</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-it-works">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon">🏠</div>
+          <h3>Tell us about your home</h3>
+          <p>Enter a few simple details about your house and energy setup — takes less than a minute.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">⚡</div>
+          <h3>We crunch the numbers</h3>
+          <p>Our tool estimates your generation and consumption profile and matches it against available tariffs.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">💰</div>
+          <h3>See your best tariff</h3>
+          <p>Get a ranked list of tariffs tailored to your setup, completely free with no sign up required.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form Section -->
+    <section class="form-section" id="form-section">
+      <h2>Find your best tariff</h2>
+      <p class="form-intro">Fill in the details below and we'll do the rest.</p>
+
+      <form id="tariff-form">
+
+        <label>House Size (m²)
+          <input type="number" id="house-size" placeholder="e.g. 90" />
+        </label>
+
+        <label>Number of Bedrooms
+          <input type="number" id="bedrooms" placeholder="e.g. 3" />
+        </label>
+
+        <label>Solar Panel Size (kWp)
+          <input type="number" id="solar-size" placeholder="e.g. 4" />
+        </label>
+
+        <label>Battery Size (kWh)
+          <input type="number" id="battery-size" placeholder="e.g. 10" />
+        </label>
+
+        <label>Location
+          <select id="location">
+            <option value="">Select a region</option>
+            <option value="scotland">Scotland</option>
+            <option value="north-england">North England</option>
+            <option value="midlands">Midlands</option>
+            <option value="south-england">South England</option>
+            <option value="southwest">South West</option>
+            <option value="wales">Wales</option>
+          </select>
+        </label>
+
+        <button type="submit">Find My Best Tariff →</button>
+
+      </form>
+    </section>
+
+    <div id="results"></div>
+
+    <!-- Footer -->
+    <footer>
+      <p>🌿 Green Tariff Marketplace — Free, independent, and built for solar owners.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
