@@ -5,7 +5,7 @@
 // Rates loaded live from Google Sheets CSV, with hardcoded fallback
 // =============================================================================
 
-const TARIFF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTt3OoI-ugxyV4pDC7p8uDHYSVrELZO2u32rYWNVLq1Np-X6gV0P0X9AqaPrjLYyA/pub?gid=598980415&single=true&output=csv";
+const TARIFF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_FtUp6LzKp_atFvdPA2Y00jImuw0lTv9ViWMjspotv-H1SWFq0VL8sOnVkd_b5sUef877d5ZS-Cch/pub?gid=245561990&single=true&output=csv";
 
 const FALLBACK_BUNDLED_TARIFFS = [
   {
@@ -431,14 +431,15 @@ function runEngine(bundledTariffs, importTariffs, exportTariffs, houseSize, bedr
   });
   bundledResults.sort((a, b) => a.annualNet - b.annualNet);
 
-  // Import tariffs (split view)
+  // Import tariffs (split view) — filter out tariffs with no real rate data
   const importResults = importTariffs.map(tariff => {
     const sim = batteryKwh > 0
       ? simulateBattery(consumptionCurve, solarCurve, batteryKwh, tariff.batteryChargeWindow || null)
       : simulateNoBattery(consumptionCurve, solarCurve);
     const costs = calculateImportCost(tariff, sim.gridImport);
-    return { ...tariff, ...costs, sim };
-  });
+    var noData = tariff.standingCharge === 0 && costs.annualImport === 0;
+    return { ...tariff, ...costs, sim, noData };
+  }).filter(function(t) { return !t.noData; });
   importResults.sort((a, b) => a.annualImportTotal - b.annualImportTotal);
 
   // Export tariffs (split view, generic sim)
