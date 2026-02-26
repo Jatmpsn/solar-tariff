@@ -5,7 +5,7 @@
 // Rates loaded live from Google Sheets CSV, with hardcoded fallback
 // =============================================================================
 
-const TARIFF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTt3OoI-ugxyV4pDC7p8uDHYSVrELZO2u32rYWNVLq1Np-X6gV0P0X9AqaPrjLYyA/pub?gid=1068078828&single=true&output=csv";
+const TARIFF_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_FtUp6LzKp_atFvdPA2Y00jImuw0lTv9ViWMjspotv-H1SWFq0VL8sOnVkd_b5sUef877d5ZS-Cch/pub?gid=245561990&single=true&output=csv";
 
 const FALLBACK_BUNDLED_TARIFFS = [
   {
@@ -124,27 +124,27 @@ function parseWindow(windowStr) {
 // ---------------------------------------------------------------------------
 function parseImportRates(row) {
   const n = v => parseFloat(v) || 0;
-  const type = (row["Type"] || "").toLowerCase().includes("flat") ? "flat" : "time-of-use";
+  const type = (row["Tariff Type"] || "").toLowerCase().includes("flat") ? "flat" : "time-of-use";
   let importRates = [];
 
   if (type === "flat") {
-    const rate = n(row["Flat Import\nRate (p/kWh)"]);
+    const rate = n(row["Flat Rate (p/kWh)"]);
     if (rate) importRates = [{ start: 0, end: 47, rate }];
   } else {
-    const offPeakRate = n(row["Off-Peak Import\n(p/kWh)"]);
-    const offPeakWindow = parseWindow(row["Off-Peak Window\n(e.g. 00:00\u201305:30)"]);
+    const offPeakRate = n(row["Off-Peak Rate (p/kWh)"]);
+    const offPeakWindow = parseWindow(row["Off-Peak Window"]);
     if (offPeakRate && offPeakWindow) importRates.push({ ...offPeakWindow, rate: offPeakRate });
 
-    const shoulderRate = n(row["Shoulder Import\n(p/kWh)"]);
+    const shoulderRate = n(row["Shoulder Rate (p/kWh)"]);
     const shoulderWindow = parseWindow(row["Shoulder Window"]);
     if (shoulderRate && shoulderWindow) importRates.push({ ...shoulderWindow, rate: shoulderRate });
 
-    const peakRate = n(row["Peak Import\n(p/kWh)"]);
+    const peakRate = n(row["Peak Rate (p/kWh)"]);
     const peakWindow = parseWindow(row["Peak Window"]);
     if (peakRate && peakWindow) importRates.push({ ...peakWindow, rate: peakRate });
 
     if (importRates.length === 0) {
-      const flatRate = n(row["Flat Import\nRate (p/kWh)"]);
+      const flatRate = n(row["Flat Rate (p/kWh)"]);
       if (flatRate) importRates = [{ start: 0, end: 47, rate: flatRate }];
     }
   }
@@ -154,9 +154,9 @@ function parseImportRates(row) {
 
 function parseExportRates(row) {
   const n = v => parseFloat(v) || 0;
-  const flatExport = n(row["Flat Export\nRate (p/kWh)"]);
-  const peakExport = n(row["Peak Export\n(p/kWh)"]);
-  const peakExportWindow = parseWindow(row["Peak Export\nWindow"]);
+  const flatExport = n(row["Export Rate (p/kWh)"]);
+  const peakExport = n(row["Peak Export (p/kWh)"]);
+  const peakExportWindow = parseWindow(row["Peak Export Window"]);
 
   let exportRates = null;
   let exportRate = flatExport;
@@ -174,14 +174,14 @@ function buildBundledTariff(row) {
   const n = v => parseFloat(v) || 0;
   const { importRates, type } = parseImportRates(row);
   const { exportRate, exportRates } = parseExportRates(row);
-  const batteryChargeWindow = parseWindow(row["Off-Peak Window\n(e.g. 00:00\u201305:30)"]);
+  const batteryChargeWindow = parseWindow(row["Off-Peak Window"]);
 
   return {
     name: row["Tariff Name"] || "", supplier: row["Supplier"] || "", type,
-    description: row["Notes"] || "", standingCharge: n(row["Standing Charge\n(p/day)"]),
+    description: row["Notes"] || "", standingCharge: n(row["Standing Charge (p/day)"]),
     importRates, exportRate, exportRates, batteryChargeWindow,
     link: row["Tariff Page URL"] || "#",
-    renewable: row["% Renewable\n(Ofgem FMD)"] || "",
+    renewable: row["% Renewable (Ofgem FMD)"] || "",
     equipment: row["Equipment Required"] || "",
   };
 }
@@ -189,14 +189,14 @@ function buildBundledTariff(row) {
 function buildImportTariff(row) {
   const n = v => parseFloat(v) || 0;
   const { importRates, type } = parseImportRates(row);
-  const batteryChargeWindow = parseWindow(row["Off-Peak Window\n(e.g. 00:00\u201305:30)"]);
+  const batteryChargeWindow = parseWindow(row["Off-Peak Window"]);
 
   return {
     name: row["Tariff Name"] || "", supplier: row["Supplier"] || "", type,
-    description: row["Notes"] || "", standingCharge: n(row["Standing Charge\n(p/day)"]),
+    description: row["Notes"] || "", standingCharge: n(row["Standing Charge (p/day)"]),
     importRates, batteryChargeWindow,
     link: row["Tariff Page URL"] || "#",
-    renewable: row["% Renewable\n(Ofgem FMD)"] || "",
+    renewable: row["% Renewable (Ofgem FMD)"] || "",
     equipment: row["Equipment Required"] || "",
   };
 }
@@ -210,7 +210,7 @@ function buildExportTariff(row) {
     name: row["Tariff Name"] || "", supplier: row["Supplier"] || "",
     description: row["Notes"] || "", exportRate, exportRates, requiresImport,
     link: row["Tariff Page URL"] || "#",
-    renewable: row["% Renewable\n(Ofgem FMD)"] || "",
+    renewable: row["% Renewable (Ofgem FMD)"] || "",
   };
 }
 
