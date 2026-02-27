@@ -399,6 +399,44 @@ function getExportRate(tariff, slot) {
 }
 
 // ---------------------------------------------------------------------------
+// DISPLAY HELPERS
+// ---------------------------------------------------------------------------
+function slotToTime(slot) {
+  var h = Math.floor(slot / 2);
+  var m = (slot % 2) * 30;
+  return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+}
+
+function formatRateBands(importRates) {
+  if (importRates.length === 1 && importRates[0].start === 0 && importRates[0].end === 47) {
+    return '<div class="rate-headline-single">' + importRates[0].rate.toFixed(2) + '<span class="rate-unit">p/kWh</span></div>';
+  }
+  var rows = importRates.map(function(r) {
+    var startTime = slotToTime(r.start);
+    var endTime = slotToTime(r.end + 1 > 47 ? 0 : r.end + 1);
+    return '<div class="rate-band-row">' +
+      '<span class="rate-band-window">' + startTime + '\u2013' + endTime + '</span>' +
+      '<span class="rate-band-value">' + r.rate.toFixed(2) + '<span class="rate-unit">p/kWh</span></span>' +
+      '</div>';
+  });
+  return '<div class="rate-headline-tou">' + rows.join("") + '</div>';
+}
+
+function buildCostTooltip(annualImport, annualStanding, standingChargePday, annualTotal) {
+  return '<span class="cost-info-wrap">' +
+    '<span class="cost-info-icon" tabindex="0" role="button" aria-label="Cost breakdown">&#9432;</span>' +
+    '<span class="cost-tooltip">' +
+      '<strong>Annual cost breakdown</strong>' +
+      '<span class="tooltip-row"><span>Import costs:</span><span>&pound;' + annualImport + '</span></span>' +
+      '<span class="tooltip-row"><span>Standing charge:</span><span>&pound;' + annualStanding + ' <small>(' + standingChargePday.toFixed(1) + 'p/day &times; 365)</small></span></span>' +
+      '<span class="tooltip-divider"></span>' +
+      '<span class="tooltip-row tooltip-total"><span>Total:</span><span>&pound;' + annualTotal + '</span></span>' +
+      '<span class="tooltip-note">Import costs are based on your estimated usage. The standing charge is a fixed daily fee for being connected to the grid.</span>' +
+    '</span>' +
+  '</span>';
+}
+
+// ---------------------------------------------------------------------------
 // COST CALCULATORS
 // ---------------------------------------------------------------------------
 function calculateImportCost(importTariff, gridImport) {
@@ -598,42 +636,26 @@ function renderBundledView(bundledResults) {
   var best = bundledResults[0];
   return bundledResults.map(function(t, i) {
     var isBest = i === 0;
-    var extraCost = i > 0 ? '<div style="font-size:0.78rem;color:#c0392b;font-weight:600;margin-top:8px;">&pound;' + (t.annualNet - best.annualNet) + ' more per year than best</div>' : "";
+    var extraCost = i > 0 ? '<div class="tariff-extra-cost">&pound;' + (t.annualNet - best.annualNet) + ' more per year than best</div>' : "";
+    var tooltip = buildCostTooltip(t.annualImport, t.annualStanding, t.standingCharge, t.annualImport + t.annualStanding);
     return '\
-<div class="tariff-card" style="margin-bottom:14px;' + (isBest ? "border:2px solid #2a7a6a;" : "") + '">\
-' + (isBest ? '<div style="background:#2a7a6a;color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px;">Best Match</div>' : "") + '\
-<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">\
-<div style="flex:1;min-width:200px;">\
-<h3 style="margin:0 0 2px;font-size:1.05rem;">' + t.name + '</h3>\
-<div style="font-size:0.78rem;color:#888;margin-bottom:8px;">' + t.supplier + ' &middot; ' + (t.type === "flat" ? "Flat Rate" : "Time of Use") + ' &middot; Import &amp; Export</div>\
+<div class="tariff-card' + (isBest ? " tariff-card--best" : "") + '">\
+' + (isBest ? '<div class="tariff-badge">Best Match</div>' : "") + '\
+<h3>' + t.name + '</h3>\
+<div class="supplier">' + t.supplier + ' &middot; ' + (t.type === "flat" ? "Flat Rate" : "Time of Use") + ' &middot; Import &amp; Export</div>\
+<div class="tariff-card-body">\
+<div class="tariff-card-main">\
+<div class="tariff-rates-headline">' + formatRateBands(t.importRates) + '</div>\
+<div class="tariff-export-line">Export: ' + t.exportRate + 'p/kWh</div>\
 </div>\
-<div style="text-align:right;">\
-<div style="font-size:1.5rem;font-weight:800;color:#1a3a4a;">&pound;' + t.annualNet + '</div>\
-<div style="font-size:0.72rem;color:#999;">Net annual cost</div>\
-</div>\
-</div>\
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;font-size:0.82rem;">\
-<div style="background:#fff4f4;border-radius:8px;padding:8px;text-align:center;">\
-<div style="font-weight:700;color:#c0392b;">&pound;' + (t.annualImport + t.annualStanding) + '</div>\
-<div style="color:#aaa;font-size:0.72rem;">Import + standing</div>\
-</div>\
-<div style="background:#f2faf8;border-radius:8px;padding:8px;text-align:center;">\
-<div style="font-weight:700;color:#2a7a6a;">&pound;' + t.annualExport + '</div>\
-<div style="color:#aaa;font-size:0.72rem;">Export earnings</div>\
-</div>\
-<div style="background:#f7f9fa;border-radius:8px;padding:8px;text-align:center;">\
-<div style="font-weight:700;color:#1a3a4a;">&pound;' + t.annualNet + '</div>\
-<div style="color:#aaa;font-size:0.72rem;">Net cost</div>\
+<div class="tariff-card-cost">\
+<div class="annual-cost-figure">&pound;' + t.annualNet + ' ' + tooltip + '</div>\
+<div class="annual-cost-label">Net annual cost (import &minus; export)</div>\
 </div>\
 </div>\
-<div style="font-size:0.75rem;color:#999;">\
-Import: ' + t.importRates.map(function(r) { return r.rate + "p"; }).join(" / ") + ' &middot;\
-Export: ' + t.exportRate + 'p/kWh &middot;\
-Standing: ' + t.standingCharge + 'p/day\
-</div>\
-' + (t.equipment ? '<div style="font-size:0.72rem;color:#b07d10;margin-top:4px;">&#9889; ' + t.equipment + '</div>' : "") + '\
+' + (t.equipment ? '<div class="tariff-equipment">&#9889; ' + t.equipment + '</div>' : "") + '\
 ' + extraCost + '\
-<a href="' + t.link + '" target="_blank" rel="noopener" style="font-size:0.82rem;display:inline-block;margin-top:8px;">View tariff &rarr;</a>\
+<a href="' + t.link + '" target="_blank" rel="noopener">View tariff &rarr;</a>\
 </div>';
   }).join("");
 }
@@ -643,51 +665,45 @@ Standing: ' + t.standingCharge + 'p/day\
 // ---------------------------------------------------------------------------
 function renderSplitView(importResults, exportResults) {
   var importCardsHTML = importResults.map(function(t, i) {
-    var rateDisplay = t.type === "flat"
-      ? t.importRates[0].rate + "p/kWh"
-      : t.importRates.map(function(r) { return r.rate + "p"; }).join(" / ");
+    var tooltip = buildCostTooltip(t.annualImport, t.annualStanding, t.standingCharge, t.annualImportTotal);
     return '\
-<div class="tariff-card" style="margin-bottom:12px;' + (i === 0 ? "border:2px solid #2a7a6a;" : "") + '">\
-' + (i === 0 ? '<div style="background:#2a7a6a;color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;">Cheapest</div>' : "") + '\
-<h4 style="margin:0 0 4px;font-size:0.95rem;">' + t.name + '</h4>\
-<div style="font-size:0.78rem;color:#888;margin-bottom:6px;">' + t.supplier + ' &middot; ' + (t.type === "flat" ? "Flat Rate" : "Time of Use") + '</div>\
-<div style="display:flex;gap:8px;margin-bottom:8px;font-size:0.82rem;">\
-<div style="flex:1;background:#fff4f4;border-radius:6px;padding:8px;text-align:center;">\
-<div style="font-weight:700;color:#c0392b;">&pound;' + t.annualImport + '</div>\
-<div style="color:#aaa;font-size:0.72rem;">Import</div>\
+<div class="tariff-card' + (i === 0 ? " tariff-card--best" : "") + '">\
+' + (i === 0 ? '<div class="tariff-badge">Cheapest</div>' : "") + '\
+<h4>' + t.name + '</h4>\
+<div class="supplier">' + t.supplier + ' &middot; ' + (t.type === "flat" ? "Flat Rate" : "Time of Use") + '</div>\
+<div class="tariff-card-body">\
+<div class="tariff-card-main">\
+<div class="tariff-rates-headline">' + formatRateBands(t.importRates) + '</div>\
 </div>\
-<div style="flex:1;background:#f7f9fa;border-radius:6px;padding:8px;text-align:center;">\
-<div style="font-weight:700;color:#1a3a4a;">&pound;' + t.annualStanding + '</div>\
-<div style="color:#aaa;font-size:0.72rem;">Standing</div>\
-</div>\
-<div style="flex:1;background:#eef4f6;border-radius:6px;padding:8px;text-align:center;">\
-<div style="font-weight:700;color:#1a3a4a;">&pound;' + t.annualImportTotal + '</div>\
-<div style="color:#aaa;font-size:0.72rem;">Total</div>\
+<div class="tariff-card-cost">\
+<div class="annual-cost-figure">&pound;' + t.annualImportTotal + ' ' + tooltip + '</div>\
+<div class="annual-cost-label">Est. annual cost</div>\
 </div>\
 </div>\
-<div style="font-size:0.75rem;color:#999;">Rates: ' + rateDisplay + ' &middot; Standing: ' + t.standingCharge + 'p/day</div>\
-' + (t.equipment ? '<div style="font-size:0.72rem;color:#b07d10;margin-top:2px;">&#9889; ' + t.equipment + '</div>' : "") + '\
-<a href="' + t.link + '" target="_blank" rel="noopener" style="font-size:0.82rem;">View tariff &rarr;</a>\
+' + (t.equipment ? '<div class="tariff-equipment">&#9889; ' + t.equipment + '</div>' : "") + '\
+<a href="' + t.link + '" target="_blank" rel="noopener">View tariff &rarr;</a>\
 </div>';
   }).join("");
 
   var exportCardsHTML = exportResults.map(function(t, i) {
     var restricted = t.requiresImport && t.requiresImport.length > 0;
-    var rateDisplay = t.exportRates
-      ? t.exportRates.map(function(r) { return r.rate + "p"; }).join(" / ")
-      : t.exportRate + "p/kWh";
+    var exportRatesArray = t.exportRates || [{ start: 0, end: 47, rate: t.exportRate }];
     return '\
-<div class="tariff-card" style="margin-bottom:12px;' + (i === 0 ? "border:2px solid #2a7a6a;" : "") + '">\
-' + (i === 0 ? '<div style="background:#2a7a6a;color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;">Highest earnings</div>' : "") + '\
-<h4 style="margin:0 0 4px;font-size:0.95rem;">' + t.name + '</h4>\
-<div style="font-size:0.78rem;color:#888;margin-bottom:6px;">' + t.supplier + '</div>\
-<div style="background:#f2faf8;border-radius:6px;padding:10px;text-align:center;margin-bottom:8px;">\
-<div style="font-size:1.15rem;font-weight:700;color:#2a7a6a;">&pound;' + t.annualExport + '</div>\
-<div style="color:#aaa;font-size:0.72rem;">Est. annual earnings</div>\
+<div class="tariff-card' + (i === 0 ? " tariff-card--best" : "") + '">\
+' + (i === 0 ? '<div class="tariff-badge">Highest earnings</div>' : "") + '\
+<h4>' + t.name + '</h4>\
+<div class="supplier">' + t.supplier + '</div>\
+<div class="tariff-card-body">\
+<div class="tariff-card-main">\
+<div class="tariff-rates-headline tariff-rates-headline--export">' + formatRateBands(exportRatesArray) + '</div>\
 </div>\
-<div style="font-size:0.75rem;color:#999;">Rate: ' + rateDisplay + '</div>\
-' + (restricted ? '<div style="font-size:0.72rem;color:#b07d10;margin-top:4px;">&#128274; Requires: ' + t.requiresImport.join(", ") + '</div>' : "") + '\
-<a href="' + t.link + '" target="_blank" rel="noopener" style="font-size:0.82rem;">View tariff &rarr;</a>\
+<div class="tariff-card-cost">\
+<div class="annual-cost-figure annual-cost-figure--export">&pound;' + t.annualExport + '</div>\
+<div class="annual-cost-label">Est. annual earnings</div>\
+</div>\
+</div>\
+' + (restricted ? '<div class="tariff-equipment">&#128274; Requires: ' + t.requiresImport.join(", ") + '</div>' : "") + '\
+<a href="' + t.link + '" target="_blank" rel="noopener">View tariff &rarr;</a>\
 </div>';
   }).join("");
 

@@ -542,6 +542,213 @@ footer p {
   margin: 0;
 }
 
+/* Tariff card layout — rate-headline design */
+.tariff-card--best {
+  border: 2px solid var(--color-primary);
+}
+
+.tariff-badge {
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.tariff-card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 10px 0;
+}
+
+.tariff-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.tariff-card-cost {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Rate display — single flat rate */
+.rate-headline-single {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  line-height: 1.2;
+}
+
+.rate-unit {
+  font-size: 0.65em;
+  font-weight: 500;
+  color: #888;
+  margin-left: 2px;
+}
+
+/* Rate display — time-of-use bands */
+.rate-headline-tou {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rate-band-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.rate-band-window {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #888;
+  min-width: 90px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rate-band-value {
+  font-weight: 700;
+}
+
+/* Export rate line (bundled cards) */
+.tariff-export-line {
+  font-size: 0.82rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* Annual cost figure */
+.annual-cost-figure {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  white-space: nowrap;
+}
+
+.annual-cost-label {
+  font-size: 0.72rem;
+  color: #999;
+  margin-top: 2px;
+}
+
+/* Export-specific colour overrides */
+.tariff-rates-headline--export .rate-headline-single {
+  color: var(--color-primary);
+}
+
+.tariff-rates-headline--export .rate-band-row {
+  color: var(--color-primary);
+}
+
+.annual-cost-figure--export {
+  color: var(--color-primary);
+}
+
+/* Extra cost comparison line */
+.tariff-extra-cost {
+  font-size: 0.78rem;
+  color: #c0392b;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Equipment note */
+.tariff-equipment {
+  font-size: 0.72rem;
+  color: #b07d10;
+  margin-top: 4px;
+}
+
+/* Cost breakdown tooltip */
+.cost-info-wrap {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.cost-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.7rem;
+  font-style: normal;
+  cursor: pointer;
+  line-height: 1;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.cost-tooltip {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 280px;
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 50;
+  text-align: left;
+  font-size: 0.82rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.cost-tooltip strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: var(--color-primary-dark);
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+
+.tooltip-divider {
+  display: block;
+  height: 1px;
+  background: #eee;
+  margin: 6px 0;
+}
+
+.tooltip-total {
+  font-weight: 700;
+}
+
+.tooltip-note {
+  display: block;
+  font-size: 0.72rem;
+  color: #999;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* Show tooltip on hover and focus */
+.cost-info-icon:hover + .cost-tooltip,
+.cost-info-icon:focus + .cost-tooltip,
+.cost-info-wrap:focus-within .cost-tooltip {
+  display: block;
+}
+
 /* ===========================
    MOBILE — up to 768px
    =========================== */
@@ -632,6 +839,23 @@ footer p {
 
   .tariff-card {
     padding: 18px 16px;
+  }
+
+  /* Tariff card — stack on mobile */
+  .tariff-card-body {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tariff-card-cost {
+    text-align: left;
+  }
+
+  /* Tooltip — reposition for mobile */
+  .cost-tooltip {
+    right: auto;
+    left: 0;
+    width: min(280px, calc(100vw - 60px));
   }
 }
 
