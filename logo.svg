@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="118 258 330 330">
+<!-- Circle background (white fill) -->
+<path transform="matrix(1,0,0,-1,433.4238,423.3486)" d="M0 0C0-82.955-67.248-150.204-150.204-150.204-233.159-150.204-300.407-82.955-300.407 0-300.407 82.955-233.159 150.204-150.204 150.204-67.248 150.204 0 82.955 0 0" fill="#ffffff"/>
+<!-- Circle outline -->
+<path transform="matrix(1,0,0,-1,433.4238,423.3486)" stroke-width="17" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0C0-82.955-67.248-150.204-150.204-150.204-233.159-150.204-300.407-82.955-300.407 0-300.407 82.955-233.159 150.204-150.204 150.204-67.248 150.204 0 82.955 0 0Z"/>
+<!-- Solar panel frame (white fill) -->
+<path transform="matrix(1,0,0,-1,348.6902,330.7994)" d="M0 0C-45.843 .124-91.685 .247-137.528 .371-146.814-23.136-156.1-46.643-165.386-70.15H27.858C18.572-46.767 9.286-23.383 0 0" fill="#ffffff"/>
+<path transform="matrix(1,0,0,-1,348.6902,330.7994)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0C-45.843 .124-91.685 .247-137.528 .371-146.814-23.136-156.1-46.643-165.386-70.15H27.858C18.572-46.767 9.286-23.383 0 0Z"/>
+<!-- Battery body (white fill) -->
+<path transform="matrix(1,0,0,-1,377.6393,493.5484)" d="M0 0H-194.093C-197.129 0-199.59 2.461-199.59 5.497V73.997C-199.59 77.033-197.129 79.494-194.093 79.494H0C3.036 79.494 5.497 77.033 5.497 73.997V5.497C5.497 2.461 3.036 0 0 0" fill="#ffffff"/>
+<path transform="matrix(1,0,0,-1,377.6393,493.5484)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0H-194.093C-197.129 0-199.59 2.461-199.59 5.497V73.997C-199.59 77.033-197.129 79.494-194.093 79.494H0C3.036 79.494 5.497 77.033 5.497 73.997V5.497C5.497 2.461 3.036 0 0 0Z"/>
+<!-- Battery terminal -->
+<path transform="matrix(1,0,0,-1,394.4414,470.1227)" d="M0 0H-7.185C-8.703 0-9.934 1.231-9.934 2.749V27.589C-9.934 29.107-8.703 30.338-7.185 30.338H0C1.518 30.338 2.749 29.107 2.749 27.589V2.749C2.749 1.231 1.518 0 0 0" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,394.4414,470.1227)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0H-7.185C-8.703 0-9.934 1.231-9.934 2.749V27.589C-9.934 29.107-8.703 30.338-7.185 30.338H0C1.518 30.338 2.749 29.107 2.749 27.589V2.749C2.749 1.231 1.518 0 0 0Z"/>
+<!-- Panel support bar -->
+<path transform="matrix(1,0,0,-1,280.2556,396.9971)" stroke-width="20" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0 .329-19.105"/>
+<!-- Solar cell 1 (bottom-left) -->
+<path transform="matrix(1,0,0,-1,236.2403,355.5346)" d="M0 0H-18.281L-13.67 12.064C-8.139 12.078-2.608 12.092 2.923 12.105 1.949 8.07 .974 4.035 0 0" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,236.2403,355.5346)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0H-18.281L-13.67 12.064C-8.139 12.078-2.608 12.092 2.923 12.105 1.949 8.07 .974 4.035 0 0Z"/>
+<!-- Solar cell 2 (top-left) -->
+<path transform="matrix(1,0,0,-1,229.4465,386.70353)" d="M0 0C-7.851 .027-15.701 .055-23.552 .082-21.438 5.655-19.324 11.227-17.211 16.799L4.035 16.881C2.69 11.254 1.345 5.627 0 0" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,229.4465,386.70353)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0C-7.851 .027-15.701 .055-23.552 .082-21.438 5.655-19.324 11.227-17.211 16.799L4.035 16.881C2.69 11.254 1.345 5.627 0 0Z"/>
+<!-- Solar cell 3 (top-center-left) -->
+<path transform="matrix(1,0,0,-1,272.1854,386.66233)" d="M0 0-27.71-.041C-26.393 5.586-25.075 11.213-23.758 16.84L.124 16.758C.082 11.172 .041 5.586 0 0" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,272.1854,386.66233)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0-27.71-.041C-26.393 5.586-25.075 11.213-23.758 16.84L.124 16.758C.082 11.172 .041 5.586 0 0Z"/>
+<!-- Solar cell 4 (bottom-center-left) -->
+<path transform="matrix(1,0,0,-1,272.3089,355.5346)" d="M0 0C-6.876-.014-13.752-.027-20.628-.041-19.736 4.008-18.844 8.056-17.952 12.105H0Z" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,272.3089,355.5346)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0C-6.876-.014-13.752-.027-20.628-.041-19.736 4.008-18.844 8.056-17.952 12.105H0V0Z"/>
+<!-- Solar cell 5 (bottom-center-right) -->
+<path transform="matrix(1,0,0,-1,308.0894,355.4934)" d="M0 0C-6.835-.027-13.67-.055-20.505-.082-20.532 3.925-20.56 7.933-20.587 11.941-14.603 11.968-8.619 11.995-2.635 12.023-1.757 8.015-.878 4.008 0 0" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,308.0894,355.4934)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0C-6.835-.027-13.67-.055-20.505-.082-20.532 3.925-20.56 7.933-20.587 11.941-14.603 11.968-8.619 11.995-2.635 12.023-1.757 8.015-.878 4.008 0 0Z"/>
+<!-- Solar cell 6 (top-center-right) -->
+<path transform="matrix(1,0,0,-1,315.0478,386.66233)" d="M0 0-27.587-.041C-27.573 5.558-27.559 11.158-27.546 16.758L-3.953 16.84C-2.635 11.227-1.318 5.613 0 0" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,315.0478,386.66233)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0-27.587-.041C-27.573 5.558-27.559 11.158-27.546 16.758L-3.953 16.84C-2.635 11.227-1.318 5.613 0 0Z"/>
+<!-- Solar cell 7 (bottom-right) -->
+<path transform="matrix(1,0,0,-1,342.1405,355.5346)" d="M0 0C-6.231 .014-12.462 .027-18.693 .041-19.654 4.063-20.615 8.084-21.575 12.105L-4.282 12.064Z" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,342.1405,355.5346)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0C-6.231 .014-12.462 .027-18.693 .041-19.654 4.063-20.615 8.084-21.575 12.105L-4.282 12.064 0 0Z"/>
+<!-- Solar cell 8 (top-right) -->
+<path transform="matrix(1,0,0,-1,354.4104,386.66233)" d="M0 0-24.005-.041C-25.336 5.586-26.667 11.213-27.999 16.84-21.04 16.881-14.082 16.923-7.123 16.964-4.749 11.309-2.374 5.655 0 0" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,354.4104,386.66233)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M0 0-24.005-.041C-25.336 5.586-26.667 11.213-27.999 16.84-21.04 16.881-14.082 16.923-7.123 16.964-4.749 11.309-2.374 5.655 0 0Z"/>
+<!-- Battery charge fill bar -->
+<path transform="matrix(1,0,0,-1,0,841.89)" d="M365.129 365.064H194.395V411.332H365.129Z" fill="#2d3570"/>
+<path transform="matrix(1,0,0,-1,0,841.89)" stroke-width="10" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#2d3570" d="M365.129 365.064H194.395V411.332H365.129Z"/>
+</svg>

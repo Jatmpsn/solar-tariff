@@ -478,13 +478,13 @@ function renderProfileChart(consumptionCurve, solarCurve) {
 
   return '\
     <svg viewBox="0 0 ' + W + ' ' + (H + 18) + '" xmlns="http://www.w3.org/2000/svg" \
-         style="width:100%;border-radius:8px;background:#f7f9f7;overflow:visible;">\
-      ' + area(consumptionCurve, "#1b4332") + area(solarCurve, "#f4a261") + '\
-      ' + line(consumptionCurve, "#1b4332") + line(solarCurve, "#f4a261") + '\
+         style="width:100%;border-radius:8px;background:#f7f9fa;overflow:visible;">\
+      ' + area(consumptionCurve, "#1a3a4a") + area(solarCurve, "#f4a261") + '\
+      ' + line(consumptionCurve, "#1a3a4a") + line(solarCurve, "#f4a261") + '\
       ' + labels + '\
     </svg>\
     <div style="display:flex;gap:16px;font-size:0.78rem;color:#666;margin-top:6px;">\
-      <span><span style="color:#1b4332;font-weight:700;">&#9632;</span> Consumption</span>\
+      <span><span style="color:#1a3a4a;font-weight:700;">&#9632;</span> Consumption</span>\
       <span><span style="color:#f4a261;font-weight:700;">&#9632;</span> Solar generation</span>\
     </div>';
 }
@@ -498,12 +498,12 @@ function renderSummary(inputs, curves, source) {
     : "";
 
   return '\
-    <div style="background:#f7f9f7;border-radius:12px;padding:18px;margin-bottom:24px;">\
+    <div style="background:#f7f9fa;border-radius:12px;padding:18px;margin-bottom:24px;">\
       ' + sourceNote + '\
       <p style="font-size:0.88rem;color:#666;margin:0 0 12px;">Based on your inputs, we estimate your daily energy profile:</p>\
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">\
         <div style="flex:1;min-width:100px;text-align:center;padding:10px;background:white;border-radius:8px;">\
-          <div style="font-size:1.25rem;font-weight:700;color:#1b4332;">' + inputs.dailyConsumption.toFixed(1) + ' kWh</div>\
+          <div style="font-size:1.25rem;font-weight:700;color:#1a3a4a;">' + inputs.dailyConsumption.toFixed(1) + ' kWh</div>\
           <div style="font-size:0.75rem;color:#999;">Daily consumption</div>\
         </div>\
         <div style="flex:1;min-width:100px;text-align:center;padding:10px;background:white;border-radius:8px;">\
@@ -511,7 +511,7 @@ function renderSummary(inputs, curves, source) {
           <div style="font-size:0.75rem;color:#999;">Solar generation</div>\
         </div>\
         <div style="flex:1;min-width:100px;text-align:center;padding:10px;background:white;border-radius:8px;">\
-          <div style="font-size:1.25rem;font-weight:700;color:#2d6a4f;">' + inputs.batteryKwh + ' kWh</div>\
+          <div style="font-size:1.25rem;font-weight:700;color:#2a7a6a;">' + inputs.batteryKwh + ' kWh</div>\
           <div style="font-size:0.75rem;color:#999;">Battery capacity</div>\
         </div>\
       </div>\
@@ -526,19 +526,19 @@ function renderToggle(isSplit) {
   return '\
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">\
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;flex-shrink:0;">\
-        <span style="position:relative;display:inline-block;width:44px;height:24px;background:' + (isSplit ? "#2d6a4f" : "#ccc") + ';border-radius:12px;transition:background 0.2s;flex-shrink:0;">\
+        <span style="position:relative;display:inline-block;width:44px;height:24px;background:' + (isSplit ? "#2a7a6a" : "#ccc") + ';border-radius:12px;transition:background 0.2s;flex-shrink:0;">\
           <span style="position:absolute;top:2px;left:' + (isSplit ? "22px" : "2px") + ';width:20px;height:20px;background:white;border-radius:50%;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>\
         </span>\
         <input type="checkbox" id="view-toggle" ' + (isSplit ? "checked" : "") + ' style="position:absolute;opacity:0;pointer-events:none;" />\
         <span style="font-size:0.88rem;color:#333;font-weight:500;">Show import and export tariffs separately</span>\
       </label>\
-      <button id="learn-more-btn" style="background:none;border:none;color:#2d6a4f;font-size:0.82rem;cursor:pointer;text-decoration:underline;padding:0;font-weight:500;white-space:nowrap;">Learn more</button>\
+      <button id="learn-more-btn" style="background:none;border:none;color:#2a7a6a;font-size:0.82rem;cursor:pointer;text-decoration:underline;padding:0;font-weight:500;white-space:nowrap;">Learn more</button>\
     </div>\
-    <div id="learn-more-callout" style="display:none;background:#f0f7f2;border:1px solid #b7d8c4;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:0.84rem;color:#333;line-height:1.6;">\
-      <div style="font-weight:700;margin-bottom:6px;color:#1b4332;">Why are there two tariffs?</div>\
+    <div id="learn-more-callout" style="display:none;background:#f0f5f7;border:1px solid #b7d5dd;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:0.84rem;color:#333;line-height:1.6;">\
+      <div style="font-weight:700;margin-bottom:6px;color:#1a3a4a;">Why are there two tariffs?</div>\
       <p style="margin:0 0 8px;">With solar panels, your energy bill has two sides:</p>\
       <p style="margin:0 0 8px;"><strong style="color:#c0392b;">Import tariff</strong> &mdash; the rate you pay for electricity drawn from the grid. This covers nights, cloudy days, and any time your panels and battery can&rsquo;t keep up with demand.</p>\
-      <p style="margin:0 0 8px;"><strong style="color:#2d6a4f;">Export tariff (SEG)</strong> &mdash; the rate you&rsquo;re paid for surplus solar electricity you send back to the grid. Under the Smart Export Guarantee, suppliers must offer you a rate for this energy.</p>\
+      <p style="margin:0 0 8px;"><strong style="color:#2a7a6a;">Export tariff (SEG)</strong> &mdash; the rate you&rsquo;re paid for surplus solar electricity you send back to the grid. Under the Smart Export Guarantee, suppliers must offer you a rate for this energy.</p>\
       <p style="margin:0 0 8px;">You&rsquo;re free to have your import and export tariffs with <strong>different suppliers</strong>. The default view above shows tariffs that bundle both into one simple package. Switch to the split view to mix and match for potentially better savings &mdash; for example, pairing a cheap overnight import tariff with a high-paying export deal from another supplier.</p>\
       <p style="margin:0;">Some export tariffs are exclusive to a particular import tariff &mdash; we flag these with a &#128274; icon so you know.</p>\
     </div>';
@@ -561,15 +561,15 @@ function renderBundledView(bundledResults) {
       : "";
 
     return '\
-      <div class="tariff-card" style="margin-bottom:14px;' + (isBest ? "border:2px solid #2d6a4f;" : "") + '">\
-        ' + (isBest ? '<div style="background:#2d6a4f;color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px;">Best Match</div>' : "") + '\
+      <div class="tariff-card" style="margin-bottom:14px;' + (isBest ? "border:2px solid #2a7a6a;" : "") + '">\
+        ' + (isBest ? '<div style="background:#2a7a6a;color:white;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px;">Best Match</div>' : "") + '\
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">\
           <div style="flex:1;min-width:200px;">\
             <h3 style="margin:0 0 2px;font-size:1.05rem;">' + t.name + '</h3>\
             <div style="font-size:0.78rem;color:#888;margin-bottom:8px;">' + t.supplier + ' &middot; ' + (t.type === "flat" ? "Flat Rate" : "Time of Use") + ' &middot; Import &amp; Export</div>\
           </div>\
           <div style="text-align:right;">\
-            <div style="font-size:1.5rem;font-weight:800;color:#1b4332;">&pound;' + t.annualNet + '</div>\
+            <div style="font-size:1.5rem;font-weight:800;color:#1a3a4a;">&pound;' + t.annualNet + '</div>\
             <div style="font-size:0.72rem;color:#999;">Net annual cost</div>\
           </div>\
         </div>\
@@ -578,12 +578,12 @@ function renderBundledView(bundledResults) {
             <div style="font-weight:700;color:#c0392b;">&pound;' + (t.annualImport + t.annualStanding) + '</div>\
             <div style="color:#aaa;font-size:0.72rem;">Import + standing</div>\
           </div>\
-          <div style="background:#f4fff9;border-radius:8px;padding:8px;text-align:center;">\
-            <div style="font-weight:700;color:#2d6a4f;">&pound;' + t.annualExport + '</div>\
+          <div style="background:#f2faf8;border-radius:8px;padding:8px;text-align:center;">\
+            <div style="font-weight:700;color:#2a7a6a;">&pound;' + t.annualExport + '</div>\
             <div style="color:#aaa;font-size:0.72rem;">Export earnings</div>\
           </div>\
-          <div style="background:#f7f9f7;border-radius:8px;padding:8px;text-align:center;">\
-            <div style="font-weight:700;color:#1b4332;">&pound;' + t.annualNet + '</div>\
+          <div style="background:#f7f9fa;border-radius:8px;padding:8px;text-align:center;">\
+            <div style="font-weight:700;color:#1a3a4a;">&pound;' + t.annualNet + '</div>\
             <div style="color:#aaa;font-size:0.72rem;">Net cost</div>\
           </div>\
         </div>\
@@ -608,8 +608,8 @@ function renderSplitView(importResults, exportResults) {
       ? t.importRates[0].rate + "p/kWh"
       : t.importRates.map(function(r) { return r.rate + "p"; }).join(" / ");
     return '\
-      <div class="tariff-card" style="margin-bottom:12px;' + (i === 0 ? "border:2px solid #2d6a4f;" : "") + '">\
-        ' + (i === 0 ? '<div style="background:#2d6a4f;color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;">Cheapest</div>' : "") + '\
+      <div class="tariff-card" style="margin-bottom:12px;' + (i === 0 ? "border:2px solid #2a7a6a;" : "") + '">\
+        ' + (i === 0 ? '<div style="background:#2a7a6a;color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;">Cheapest</div>' : "") + '\
         <h4 style="margin:0 0 4px;font-size:0.95rem;">' + t.name + '</h4>\
         <div style="font-size:0.78rem;color:#888;margin-bottom:6px;">' + t.supplier + ' &middot; ' + (t.type === "flat" ? "Flat Rate" : "Time of Use") + '</div>\
         <div style="display:flex;gap:8px;margin-bottom:8px;font-size:0.82rem;">\
@@ -617,12 +617,12 @@ function renderSplitView(importResults, exportResults) {
             <div style="font-weight:700;color:#c0392b;">&pound;' + t.annualImport + '</div>\
             <div style="color:#aaa;font-size:0.72rem;">Import</div>\
           </div>\
-          <div style="flex:1;background:#f7f9f7;border-radius:6px;padding:8px;text-align:center;">\
-            <div style="font-weight:700;color:#1b4332;">&pound;' + t.annualStanding + '</div>\
+          <div style="flex:1;background:#f7f9fa;border-radius:6px;padding:8px;text-align:center;">\
+            <div style="font-weight:700;color:#1a3a4a;">&pound;' + t.annualStanding + '</div>\
             <div style="color:#aaa;font-size:0.72rem;">Standing</div>\
           </div>\
-          <div style="flex:1;background:#eef6f0;border-radius:6px;padding:8px;text-align:center;">\
-            <div style="font-weight:700;color:#1b4332;">&pound;' + t.annualImportTotal + '</div>\
+          <div style="flex:1;background:#eef4f6;border-radius:6px;padding:8px;text-align:center;">\
+            <div style="font-weight:700;color:#1a3a4a;">&pound;' + t.annualImportTotal + '</div>\
             <div style="color:#aaa;font-size:0.72rem;">Total</div>\
           </div>\
         </div>\
@@ -638,12 +638,12 @@ function renderSplitView(importResults, exportResults) {
       ? t.exportRates.map(function(r) { return r.rate + "p"; }).join(" / ")
       : t.exportRate + "p/kWh";
     return '\
-      <div class="tariff-card" style="margin-bottom:12px;' + (i === 0 ? "border:2px solid #2d6a4f;" : "") + '">\
-        ' + (i === 0 ? '<div style="background:#2d6a4f;color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;">Highest earnings</div>' : "") + '\
+      <div class="tariff-card" style="margin-bottom:12px;' + (i === 0 ? "border:2px solid #2a7a6a;" : "") + '">\
+        ' + (i === 0 ? '<div style="background:#2a7a6a;color:white;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;">Highest earnings</div>' : "") + '\
         <h4 style="margin:0 0 4px;font-size:0.95rem;">' + t.name + '</h4>\
         <div style="font-size:0.78rem;color:#888;margin-bottom:6px;">' + t.supplier + '</div>\
-        <div style="background:#f4fff9;border-radius:6px;padding:10px;text-align:center;margin-bottom:8px;">\
-          <div style="font-size:1.15rem;font-weight:700;color:#2d6a4f;">&pound;' + t.annualExport + '</div>\
+        <div style="background:#f2faf8;border-radius:6px;padding:10px;text-align:center;margin-bottom:8px;">\
+          <div style="font-size:1.15rem;font-weight:700;color:#2a7a6a;">&pound;' + t.annualExport + '</div>\
           <div style="color:#aaa;font-size:0.72rem;">Est. annual earnings</div>\
         </div>\
         <div style="font-size:0.75rem;color:#999;">Rate: ' + rateDisplay + '</div>\
@@ -655,14 +655,14 @@ function renderSplitView(importResults, exportResults) {
   return '\
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">\
       <div>\
-        <h3 style="font-size:1rem;color:#1b4332;margin:0 0 12px;">\
+        <h3 style="font-size:1rem;color:#1a3a4a;margin:0 0 12px;">\
           &#9889; Import Tariffs\
           <span style="font-size:0.72rem;font-weight:400;color:#999;">(' + importResults.length + ' tariffs, cheapest first)</span>\
         </h3>\
         ' + importCardsHTML + '\
       </div>\
       <div>\
-        <h3 style="font-size:1rem;color:#2d6a4f;margin:0 0 12px;">\
+        <h3 style="font-size:1rem;color:#2a7a6a;margin:0 0 12px;">\
           &#9728;&#65039; Export Tariffs\
           <span style="font-size:0.72rem;font-weight:400;color:#999;">(' + exportResults.length + ' tariffs, highest earnings first)</span>\
         </h3>\
