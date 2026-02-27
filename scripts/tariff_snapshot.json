@@ -1,1 +1,166 @@
-{}
+{
+  "Octopus Agile": {
+    "Standing Charge\n(p/day)": "61",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Octopus Flux": {
+    "Standing Charge\n(p/day)": "51",
+    "Peak Export\n(p/kWh)": "32.17"
+  },
+  "Octopus Go": {
+    "Standing Charge\n(p/day)": "61",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Octopus Cosy": {
+    "Standing Charge\n(p/day)": "61",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Intelligent Octopus": {
+    "Standing Charge\n(p/day)": "61",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Agile Octopus": {
+    "Standing Charge\n(p/day)": "61",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "British Gas Solar Extra": {
+    "Standing Charge\n(p/day)": "60",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "EDF Simply Fixed": {
+    "Standing Charge\n(p/day)": "60",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "OVO 1 Year Fixed": {
+    "Standing Charge\n(p/day)": "58",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "E.ON Next Drive": {
+    "Standing Charge\n(p/day)": "61",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Scottish Power Smart": {
+    "Standing Charge\n(p/day)": "60",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Good Energy EV Charge": {
+    "Standing Charge\n(p/day)": "55",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Ecotricity Smart Fixed": {
+    "Standing Charge\n(p/day)": "55",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Shell Energy Fixed": {
+    "Standing Charge\n(p/day)": "60",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Utility Warehouse Fixed": {
+    "Standing Charge\n(p/day)": "59",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "So Energy Variable": {
+    "Standing Charge\n(p/day)": "57",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Fuse Variable": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Fuse Fixed 13m": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Fuse Fixed 15m": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Fuse Smart EV": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Fuse Multi-Rate": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Intelligent Octopus Flux": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Outgoing Octopus": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Outgoing Agile": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": "9.41"
+  },
+  "Good Energy Solar Savings": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Good Energy Solar Savings Exclusive": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "British Gas Export & Earn Plus": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "British Gas Export & Earn Flex": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "EDF Export 12m": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "EDF SEG Export Variable": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "Ecotricity Smart Export": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "E.ON Next Export Exclusive": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "E.ON Next Flex Export": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "ScottishPower SmartGen": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "ScottishPower SmartGen Premium": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "OVO SEG Beyond Exclusive": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "OVO SEG Flex": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "UW Smart Export Bundle": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "UW Smart Export Standard": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "So Export Fix": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  },
+  "So Export Flex": {
+    "Standing Charge\n(p/day)": "",
+    "Peak Export\n(p/kWh)": ""
+  }
+}
