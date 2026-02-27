@@ -126,16 +126,10 @@
             I don't have a battery system
           </label>
 
-          <label>Location
-            <select id="location">
-              <option value="">Select a region</option>
-              <option value="scotland">Scotland</option>
-              <option value="north-england">North England</option>
-              <option value="midlands">Midlands</option>
-              <option value="south-england">South England</option>
-              <option value="southwest">South West</option>
-              <option value="wales">Wales</option>
-            </select>
+          <label>Postcode
+            <input type="text" id="postcode" placeholder="e.g. SW1A 1AA" autocomplete="postal-code" />
+            <span id="postcode-error" class="field-error"></span>
+            <span id="postcode-region" class="field-hint"></span>
           </label>
 
           <button type="submit">Find My Best Tariff &rarr;</button>

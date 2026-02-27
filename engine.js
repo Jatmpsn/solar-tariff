@@ -471,6 +471,45 @@ function isCompatible(exportTariff, importTariff) {
 }
 
 // ---------------------------------------------------------------------------
+// POSTCODE LOOKUP (postcodes.io — free, no API key)
+// ---------------------------------------------------------------------------
+const POSTCODE_REGION_MAP = {
+  "North East": "north-england",
+  "North West": "north-england",
+  "Yorkshire and The Humber": "north-england",
+  "East Midlands": "midlands",
+  "West Midlands": "midlands",
+  "East of England": "midlands",
+  "London": "south-england",
+  "South East": "south-england",
+  "South West": "southwest"
+};
+
+const REGION_LABELS = {
+  "scotland": "Scotland", "north-england": "North England",
+  "midlands": "Midlands", "south-england": "South England",
+  "southwest": "South West", "wales": "Wales"
+};
+
+async function lookupPostcode(postcode) {
+  var clean = postcode.replace(/\s+/g, "").toUpperCase();
+  if (!clean) throw new Error("Please enter your postcode");
+  var resp = await fetch("https://api.postcodes.io/postcodes/" + encodeURIComponent(clean));
+  if (!resp.ok) throw new Error("We couldn't recognise that postcode \u2014 please check and try again");
+  var data = await resp.json();
+  if (data.status !== 200 || !data.result) throw new Error("We couldn't recognise that postcode \u2014 please check and try again");
+  var result = data.result;
+  var country = result.country;
+  if (country === "Scotland") return { region: "scotland", label: "Scotland" };
+  if (country === "Wales") return { region: "wales", label: "Wales" };
+  if (country === "Northern Ireland") return { region: "north-england", label: "Northern Ireland" };
+  var engRegion = result.region || "";
+  var mapped = POSTCODE_REGION_MAP[engRegion];
+  if (mapped) return { region: mapped, label: REGION_LABELS[mapped] || engRegion };
+  return { region: "midlands", label: engRegion || "Unknown" };
+}
+
+// ---------------------------------------------------------------------------
 // REGIONAL ESTIMATES
 // ---------------------------------------------------------------------------
 const sunHours = {

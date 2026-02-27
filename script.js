@@ -53,6 +53,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // --- Postcode error helpers ---
+  var postcodeInput = document.getElementById("postcode");
+  var postcodeError = document.getElementById("postcode-error");
+  var postcodeRegion = document.getElementById("postcode-region");
+
+  function clearPostcodeError() {
+    postcodeError.textContent = "";
+    postcodeInput.style.borderColor = "";
+  }
+
+  function showPostcodeError(msg) {
+    postcodeError.textContent = msg;
+    postcodeInput.style.borderColor = "#c0392b";
+  }
+
+  postcodeInput.addEventListener("input", clearPostcodeError);
+
   // --- Restore form values from sessionStorage ---
   var stored = sessionStorage.getItem("tariffResults");
   if (stored) {
@@ -69,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("battery-size").value =
             data.formValues.batteryKwh;
         }
-        document.getElementById("location").value = data.formValues.location;
+        postcodeInput.value = data.formValues.postcode || "";
       }
     } catch (e) {
       /* ignore parse errors */
@@ -91,8 +108,15 @@ document.addEventListener("DOMContentLoaded", function () {
       var batteryKwh = noBatteryCheckbox.checked
         ? 0
         : parseFloat(document.getElementById("battery-size").value) || 0;
-      var location =
-        document.getElementById("location").value || "midlands";
+      // Validate postcode before closing sidebar
+      clearPostcodeError();
+      postcodeRegion.textContent = "";
+      var postcodeValue = postcodeInput.value.trim();
+      if (!postcodeValue) {
+        showPostcodeError("Please enter your postcode");
+        postcodeInput.focus();
+        return;
+      }
 
       // Close sidebar, show loading overlay
       closeSidebar();
@@ -103,7 +127,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "Analysing your home\u2019s energy requirements\u2026";
       loadingText.style.opacity = "1";
 
-      // Start loading tariffs in parallel with animation
+      // Look up postcode and load tariffs in parallel with animation
+      var postcodePromise = lookupPostcode(postcodeValue);
       var tariffPromise = loadTariffs();
 
       // After 1.5s, change text
@@ -117,8 +142,22 @@ document.addEventListener("DOMContentLoaded", function () {
       loadingText.textContent = "Finding the best tariff\u2026";
       loadingText.style.opacity = "1";
 
-      // Wait for tariffs to finish loading (may already be done)
-      var result = await tariffPromise;
+      // Wait for both to finish
+      var postcodeResult, result;
+      try {
+        var results = await Promise.all([postcodePromise, tariffPromise]);
+        postcodeResult = results[0];
+        result = results[1];
+      } catch (err) {
+        // Postcode lookup failed — hide loading, reopen sidebar, show error
+        loadingOverlay.style.display = "none";
+        openSidebar();
+        showPostcodeError(err.message);
+        postcodeInput.focus();
+        return;
+      }
+
+      var location = postcodeResult.region;
 
       // Run engine
       var output = runEngine(
@@ -143,6 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
             bedrooms: bedrooms,
             solarKwp: solarKwp,
             batteryKwh: batteryKwh,
+            postcode: postcodeValue,
             location: location,
           },
         })
