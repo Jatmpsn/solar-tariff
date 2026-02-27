@@ -1,3 +1,11 @@
+:root {
+  --color-primary-dark: #1a3a4a;
+  --color-primary: #2a7a6a;
+  --color-bg: #f7f9fa;
+  --color-card-bg: #f0f5f7;
+  --color-card-border: #dde9ed;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,7 +14,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #f7f9f7;
+  background-color: var(--color-bg);
   color: #333;
 }
 
@@ -31,11 +39,19 @@ body {
 .nav-logo {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #1b4332;
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-logo-img {
+  height: 36px;
+  width: auto;
 }
 
 .nav-cta {
-  background: #2d6a4f;
+  background: var(--color-primary);
   color: white;
   padding: 10px 20px;
   border-radius: 8px;
@@ -46,7 +62,7 @@ body {
 }
 
 .nav-cta:hover {
-  background: #1b4332;
+  background: var(--color-primary-dark);
 }
 
 /* Hero */
@@ -70,7 +86,7 @@ body {
 .hero h1 {
   font-size: 2.4rem;
   line-height: 1.2;
-  color: #1b4332;
+  color: var(--color-primary-dark);
   margin-bottom: 16px;
 }
 
@@ -91,19 +107,50 @@ body {
 .tick-list {
   list-style: none;
   margin: 12px 0 30px;
+  padding-left: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .tick-list li {
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: #333;
+  padding-left: 28px;
+  position: relative;
+}
+
+.tick-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  background-color: #2d3570;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.tick-list li::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  width: 1px;
+  height: calc(100% + 12px);
+  background-color: #2d3570;
+  opacity: 0.25;
+}
+
+.tick-list li:last-child::after {
+  display: none;
 }
 
 .hero-btn {
   display: inline-block;
-  background: #2d6a4f;
+  background: var(--color-primary);
   color: white;
   padding: 14px 28px;
   border-radius: 10px;
@@ -114,7 +161,7 @@ body {
 }
 
 .hero-btn:hover {
-  background: #1b4332;
+  background: var(--color-primary-dark);
 }
 
 /* Energy Graphic */
@@ -133,16 +180,16 @@ body {
 }
 
 .graphic-card {
-  background: #f0f7f4;
+  background: var(--color-card-bg);
   border-radius: 16px;
   padding: 20px;
   text-align: center;
-  border: 1px solid #e0ede6;
+  border: 1px solid var(--color-card-border);
 }
 
 .graphic-card.highlight {
-  background: #2d6a4f;
-  border-color: #2d6a4f;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .graphic-card.highlight .graphic-label,
@@ -165,19 +212,19 @@ body {
 .graphic-value {
   font-size: 1rem;
   font-weight: 700;
-  color: #1b4332;
+  color: var(--color-primary-dark);
 }
 
 /* How it works */
 .how-it-works {
   padding: 80px 20px;
   text-align: center;
-  background: #f7f9f7;
+  background: var(--color-bg);
 }
 
 .how-it-works h2 {
   font-size: 1.8rem;
-  color: #1b4332;
+  color: var(--color-primary-dark);
   margin-bottom: 50px;
 }
 
@@ -207,7 +254,7 @@ body {
 
 .step h3 {
   font-size: 1rem;
-  color: #1b4332;
+  color: var(--color-primary-dark);
   margin-bottom: 8px;
   font-weight: 600;
 }
@@ -228,7 +275,7 @@ body {
 
 .form-section h2 {
   font-size: 1.8rem;
-  color: #1b4332;
+  color: var(--color-primary-dark);
   margin-bottom: 8px;
 }
 
@@ -239,7 +286,7 @@ body {
 }
 
 form {
-  background: #f7f9f7;
+  background: var(--color-bg);
   max-width: 500px;
   margin: 0 auto;
   padding: 30px;
@@ -271,11 +318,11 @@ input, select {
 
 input:focus, select:focus {
   outline: none;
-  border-color: #2d6a4f;
+  border-color: var(--color-primary);
 }
 
 button {
-  background-color: #2d6a4f;
+  background-color: var(--color-primary);
   color: white;
   padding: 16px;
   border: none;
@@ -291,7 +338,7 @@ button {
 }
 
 button:hover {
-  background-color: #1b4332;
+  background-color: #35897a;
 }
 
 /* Results */
@@ -302,7 +349,7 @@ button:hover {
 }
 
 h2 {
-  color: #1b4332;
+  color: var(--color-primary-dark);
   margin-bottom: 10px;
   font-size: 1.3rem;
 }
@@ -323,7 +370,7 @@ hr {
 
 .tariff-card h3 {
   font-size: 1.1rem;
-  color: #1b4332;
+  color: var(--color-primary-dark);
   margin-bottom: 4px;
 }
 
@@ -342,7 +389,7 @@ hr {
 
 .tariff-card .export {
   font-size: 0.9rem;
-  color: #2d6a4f;
+  color: var(--color-primary);
   font-weight: 600;
   margin-top: 10px;
 }
@@ -350,7 +397,7 @@ hr {
 .tariff-card a {
   display: inline-block;
   margin-top: 14px;
-  color: #2d6a4f;
+  color: var(--color-primary);
   font-weight: 600;
   text-decoration: none;
   font-size: 0.95rem;
@@ -363,7 +410,7 @@ hr {
 
 /* Footer */
 footer {
-  background: #1b4332;
+  background: var(--color-primary-dark);
   color: white;
   text-align: center;
   padding: 30px 20px;
