@@ -1,9 +1,11 @@
 // =============================================================================
-// GREEN TARIFF MARKETPLACE — Calculation Engine v3.3
+// GREEN TARIFF MARKETPLACE — Calculation Engine v4.0
 // Half-hourly energy modelling with solar, battery, and tariff cost engine
 // Default: bundled tariffs (Col C = "Both") | Toggle: split import & export
 // Rates loaded live from Google Sheets CSV, with hardcoded fallback
 //
+// v4.0 — Seasonal modelling (12-month), battery strategy optimisation (4
+//         strategies), heat pump support
 // v3.3 — Battery effectiveness blending for realistic annual estimates
 // =============================================================================
 
@@ -110,10 +112,104 @@ const FALLBACK_EXPORT_TARIFFS = [
 // BATTERY ANNUAL EFFECTIVENESS
 // ---------------------------------------------------------------------------
 // The single-day simulation overstates battery performance because it models
-// a perfect day. In reality, cloudy days, winter months, and other losses mean
-// a home battery achieves roughly 70% of its theoretical benefit over a year.
-// This factor blends the battery sim with the no-battery sim.
+// a perfect day. In reality, cloudy days and other losses mean a home battery
+// achieves roughly 70% of its theoretical benefit over a year. With seasonal
+// modelling (v4.0) the model is more realistic, but we keep a modest blending
+// factor to account for day-to-day weather variation within each month.
 const BATTERY_EFFECTIVENESS = 0.70;
+
+// ---------------------------------------------------------------------------
+// SEASONAL DATA (v4.0)
+// ---------------------------------------------------------------------------
+// Monthly peak sun hours per region (kWh/m²/day on horizontal plane).
+// Source: PVGIS v5.3 (EU Joint Research Centre), 2005-2020 multi-year average.
+// Representative cities: Edinburgh, Manchester, Birmingham, London, Exeter, Cardiff.
+// Wales reduced ~5% from Cardiff PVGIS to represent whole-of-Wales including
+// cloudier upland areas. Index: 0 = Jan, 11 = Dec.
+const MONTHLY_SUN_HOURS = {
+  "scotland":      [0.5, 1.1, 2.1, 3.7, 4.5, 4.6, 4.5, 3.7, 2.7, 1.5, 0.7, 0.4],
+  "north-england": [0.6, 1.2, 2.3, 3.7, 4.3, 4.6, 4.4, 3.7, 2.7, 1.6, 0.8, 0.5],
+  "midlands":      [0.7, 1.3, 2.5, 3.9, 4.5, 4.9, 4.8, 4.0, 3.0, 1.7, 0.9, 0.6],
+  "south-england": [0.8, 1.4, 2.6, 4.0, 4.6, 5.2, 5.1, 4.2, 3.2, 1.8, 1.1, 0.7],
+  "southwest":     [0.9, 1.6, 2.7, 4.3, 5.0, 5.2, 5.1, 4.2, 3.3, 1.9, 1.1, 0.7],
+  "wales":         [0.7, 1.4, 2.6, 3.9, 4.8, 5.1, 4.9, 4.0, 3.0, 1.7, 1.0, 0.7]
+};
+
+// Seasonal consumption multiplier — winter months use more electricity (lighting,
+// appliances) than summer. Validated against Ofgem TDCV, ELEXON Profile Class 1,
+// and DESNZ seasonal demand data. Averages to 1.0 across the year.
+const MONTHLY_CONSUMPTION_WEIGHT = [
+  1.15, 1.10, 1.05, 0.95, 0.90, 0.85,  // Jan–Jun
+  0.85, 0.88, 0.95, 1.05, 1.10, 1.17   // Jul–Dec
+];
+
+const DAYS_PER_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+// ---------------------------------------------------------------------------
+// BATTERY STRATEGIES (v4.0)
+// ---------------------------------------------------------------------------
+const STRATEGIES = {
+  "self-consumption": {
+    key: "self-consumption",
+    label: "Self-Consumption",
+    description: "Maximise use of your own solar. No force exporting.",
+    shortDesc: "use solar first, top up battery overnight if needed",
+    gridChargeEnabled: true,
+    forceExportEnabled: false,
+    offPeakHomeSource: "battery",
+    chargeFromGrid: "shortfall-only",
+    forceExportReserve: 1.0
+  },
+  "arbitrage": {
+    key: "arbitrage",
+    label: "Buy Cheap, Sell Dear",
+    description: "Charge battery from grid overnight at cheap rates, sell during peak.",
+    shortDesc: "charge overnight, export during peak hours",
+    gridChargeEnabled: true,
+    forceExportEnabled: true,
+    offPeakHomeSource: "grid",
+    chargeFromGrid: "full",
+    forceExportReserve: 0.10
+  },
+  "hybrid": {
+    key: "hybrid",
+    label: "Solar + Peak Export",
+    description: "Charge from solar, top up from grid if needed, export during peak.",
+    shortDesc: "solar charges battery, export surplus at peak",
+    gridChargeEnabled: true,
+    forceExportEnabled: true,
+    offPeakHomeSource: "grid",
+    chargeFromGrid: "shortfall-only",
+    forceExportReserve: 0.20
+  },
+  "solar-only": {
+    key: "solar-only",
+    label: "Solar Only",
+    description: "Battery charges only from solar. Maximum self-sufficiency.",
+    shortDesc: "no grid charging, battery from solar only",
+    gridChargeEnabled: false,
+    forceExportEnabled: false,
+    offPeakHomeSource: "battery",
+    chargeFromGrid: "none",
+    forceExportReserve: 1.0
+  }
+};
+
+const STRATEGY_LIST = Object.values(STRATEGIES);
+
+// ---------------------------------------------------------------------------
+// HEAT PUMP DATA (v4.0)
+// ---------------------------------------------------------------------------
+// kWh consumed per kW of heat pump capacity, per day, by month.
+// Calibrated against PVGIS heating degree days (base 15.5°C), Energy Stats UK
+// real-world monitoring (5kW Vaillant Arotherm, Sheffield, 2022-2026), and
+// BEIS Electrification of Heat trial data (428 ASHPs, SPF 2.81).
+// DHW baseline of ~0.4 kWh/kW/day in summer. Annual total: ~800 kWh/kW.
+// Assumes seasonal performance factor (SPF) of ~2.8 (DESNZ standard).
+const HEAT_PUMP_MONTHLY_KWH_PER_KW = [
+  4.3, 4.2, 3.4, 2.8, 0.9, 0.4,   // Jan–Jun
+  0.4, 0.4, 0.7, 2.1, 3.2, 3.8    // Jul–Dec
+];
 
 // ---------------------------------------------------------------------------
 // CSV PARSER
@@ -169,6 +265,27 @@ function parseWindow(windowStr) {
   const parts = firstWindow.split("\u2013");
   if (parts.length !== 2) return null;
   return { start: timeToSlot(parts[0]), end: timeToSlot(parts[1]) };
+}
+
+// Check if a slot falls within a time window (handles overnight wrap-around)
+function isInWindow(slot, window) {
+  if (!window) return false;
+  if (window.start <= window.end) {
+    return slot >= window.start && slot <= window.end;
+  }
+  // Overnight window (e.g. 23:00–05:00 = slots 46–10)
+  return slot >= window.start || slot <= window.end;
+}
+
+// Find the peak export window (highest export rate) from a tariff
+function findPeakExportWindow(tariff) {
+  if (!tariff.exportRates || tariff.exportRates.length < 2) return null;
+  let best = null;
+  for (const r of tariff.exportRates) {
+    if (r.start === 0 && r.end === 47) continue; // skip full-day fallback rate
+    if (!best || r.rate > best.rate) best = { start: r.start, end: r.end };
+  }
+  return best;
 }
 
 // ---------------------------------------------------------------------------
@@ -322,36 +439,138 @@ function buildConsumptionCurve(dailyConsumptionKwh) {
   return profile.map(v => (v / total) * dailyConsumptionKwh);
 }
 
+// Heat pump demand curve: morning peak (06:00-09:00), daytime maintenance,
+// evening peak (17:00-21:00), low overnight setback.
+function buildHeatPumpCurve(dailyKwh) {
+  const profile = [
+    // 00:00-05:30 (slots 0-11): overnight setback
+    0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,
+    // 06:00-08:30 (slots 12-17): morning warm-up
+    0.040,0.040,0.040,0.040,0.040,0.040,
+    // 09:00-16:30 (slots 18-33): daytime maintenance
+    0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,0.020,
+    // 17:00-20:30 (slots 34-41): evening peak
+    0.035,0.035,0.035,0.035,0.035,0.035,0.035,0.035,
+    // 21:00-23:30 (slots 42-47): wind-down
+    0.015,0.015,0.015,0.015,0.015,0.015
+  ];
+  const total = profile.reduce((a, b) => a + b, 0);
+  return profile.map(v => (v / total) * dailyKwh);
+}
+
+function addCurves(a, b) {
+  return a.map((v, i) => v + (b[i] || 0));
+}
+
 // ---------------------------------------------------------------------------
 // BATTERY SIMULATIONS
 // ---------------------------------------------------------------------------
-function simulateBattery(consumption, solar, batteryKwh, chargeWindow) {
+// Strategy-aware battery simulation. The strategy object controls:
+// - Whether to charge from grid (and how much)
+// - Whether to force-export during peak export windows
+// - Whether battery or grid powers the home during off-peak
+function simulateBattery(consumption, solar, batteryKwh, strategy, chargeWindow, peakExportWindow) {
   const efficiency = 0.90;
   const maxSlotCharge = (batteryKwh / 2) * 0.5;
   let soc = batteryKwh * 0.2;
   const gridImport = new Array(48).fill(0);
   const gridExport = new Array(48).fill(0);
   const batteryState = new Array(48).fill(0);
+
+  // For shortfall-only charging, estimate how much energy the battery needs
+  let expectedShortfall = 0;
+  if (strategy.chargeFromGrid === "shortfall-only") {
+    for (let i = 0; i < 48; i++) {
+      const deficit = consumption[i] - solar[i];
+      if (deficit > 0) expectedShortfall += deficit;
+    }
+    expectedShortfall = Math.min(expectedShortfall, batteryKwh);
+  }
+
   for (let i = 0; i < 48; i++) {
-    const inChargeWindow = chargeWindow && i >= chargeWindow.start && i <= chargeWindow.end;
-    let net = consumption[i] - solar[i];
-    if (net <= 0) {
-      const excess = -net;
-      const canCharge = Math.min(excess, (batteryKwh - soc) / efficiency, maxSlotCharge);
-      soc = Math.min(batteryKwh, soc + canCharge * efficiency);
-      gridExport[i] = Math.max(0, excess - canCharge);
-    } else {
-      const discharge = Math.min(net, soc * efficiency, maxSlotCharge);
-      soc = Math.max(0, soc - discharge / efficiency);
-      gridImport[i] = Math.max(0, net - discharge);
+    const inCharge = isInWindow(i, chargeWindow);
+    const inPeakExport = isInWindow(i, peakExportWindow);
+    const net = consumption[i] - solar[i];
+    let slotDischargeUsed = 0;
+    let slotChargeUsed = 0;
+
+    // --- PEAK EXPORT PERIOD ---
+    if (inPeakExport && strategy.forceExportEnabled) {
+      if (net <= 0) {
+        gridExport[i] = -net;
+      } else {
+        const discharge = Math.min(net, soc * efficiency, maxSlotCharge);
+        soc = Math.max(0, soc - discharge / efficiency);
+        slotDischargeUsed = discharge;
+        gridImport[i] = net - discharge;
+      }
+      // Force-discharge remaining battery to grid (down to reserve)
+      const reserveSoc = batteryKwh * strategy.forceExportReserve;
+      const availableDischarge = maxSlotCharge - slotDischargeUsed;
+      if (soc > reserveSoc && availableDischarge > 0) {
+        const forceAmount = Math.min(
+          (soc - reserveSoc) * efficiency,
+          availableDischarge
+        );
+        soc = Math.max(reserveSoc, soc - forceAmount / efficiency);
+        gridExport[i] += forceAmount;
+      }
     }
-    if (inChargeWindow && soc < batteryKwh * 0.95) {
-      const topUp = Math.min((batteryKwh - soc) / efficiency, maxSlotCharge);
-      gridImport[i] += topUp;
-      soc = Math.min(batteryKwh, soc + topUp * efficiency);
+
+    // --- CHARGE WINDOW (OFF-PEAK) ---
+    else if (inCharge) {
+      if (net <= 0) {
+        const excess = -net;
+        const canCharge = Math.min(excess, (batteryKwh - soc) / efficiency, maxSlotCharge);
+        soc = Math.min(batteryKwh, soc + canCharge * efficiency);
+        slotChargeUsed = canCharge;
+        gridExport[i] = Math.max(0, excess - canCharge);
+      } else {
+        if (strategy.offPeakHomeSource === "battery") {
+          const discharge = Math.min(net, soc * efficiency, maxSlotCharge);
+          soc = Math.max(0, soc - discharge / efficiency);
+          slotDischargeUsed = discharge;
+          gridImport[i] = net - discharge;
+        } else {
+          gridImport[i] = net;
+        }
+      }
+      // Grid top-up during charge window
+      if (strategy.gridChargeEnabled && strategy.chargeFromGrid !== "none") {
+        let targetSoc;
+        if (strategy.chargeFromGrid === "full") {
+          targetSoc = batteryKwh * 0.95;
+        } else {
+          targetSoc = Math.min(batteryKwh * 0.95, soc + expectedShortfall / efficiency);
+        }
+        if (soc < targetSoc) {
+          const availableCharge = maxSlotCharge - slotChargeUsed;
+          const topUp = Math.min((targetSoc - soc) / efficiency, availableCharge);
+          if (topUp > 0) {
+            gridImport[i] += topUp;
+            soc = Math.min(batteryKwh, soc + topUp * efficiency);
+          }
+        }
+      }
     }
+
+    // --- NORMAL OPERATION ---
+    else {
+      if (net <= 0) {
+        const excess = -net;
+        const canCharge = Math.min(excess, (batteryKwh - soc) / efficiency, maxSlotCharge);
+        soc = Math.min(batteryKwh, soc + canCharge * efficiency);
+        gridExport[i] = Math.max(0, excess - canCharge);
+      } else {
+        const discharge = Math.min(net, soc * efficiency, maxSlotCharge);
+        soc = Math.max(0, soc - discharge / efficiency);
+        gridImport[i] = net - discharge;
+      }
+    }
+
     batteryState[i] = soc;
   }
+
   return { gridImport, gridExport, batteryState };
 }
 
@@ -384,7 +603,7 @@ function applyBatteryEffectiveness(noBatSim, batSim) {
 // ---------------------------------------------------------------------------
 function getImportRate(tariff, slot) {
   for (const b of tariff.importRates) {
-    if (slot >= b.start && slot <= b.end) return b.rate;
+    if (isInWindow(slot, b)) return b.rate;
   }
   return 25;
 }
@@ -392,7 +611,7 @@ function getImportRate(tariff, slot) {
 function getExportRate(tariff, slot) {
   if (tariff.exportRates) {
     for (const b of tariff.exportRates) {
-      if (slot >= b.start && slot <= b.end) return b.rate;
+      if (isInWindow(slot, b)) return b.rate;
     }
   }
   return tariff.exportRate || 0;
@@ -439,30 +658,14 @@ function buildCostTooltip(annualImport, annualStanding, standingChargePday, annu
 // ---------------------------------------------------------------------------
 // COST CALCULATORS
 // ---------------------------------------------------------------------------
-function calculateImportCost(importTariff, gridImport) {
-  let importPence = 0;
-  for (let i = 0; i < 48; i++) importPence += gridImport[i] * getImportRate(importTariff, i);
-  const annualImport = Math.round((importPence / 100) * 365);
-  const annualStanding = Math.round((importTariff.standingCharge / 100) * 365);
-  return { annualImport, annualStanding, annualImportTotal: annualImport + annualStanding };
-}
-
-function calculateExportEarnings(exportTariff, gridExport) {
-  let exportPence = 0;
-  for (let i = 0; i < 48; i++) exportPence += gridExport[i] * getExportRate(exportTariff, i);
-  return { annualExport: Math.round((exportPence / 100) * 365) };
-}
-
-function calculateBundledCost(tariff, gridImport, gridExport) {
+// Daily cost in pence for one simulated day (used in monthly loop)
+function calculateDailyCostPence(tariff, gridImport, gridExport) {
   let importPence = 0, exportPence = 0;
   for (let i = 0; i < 48; i++) {
     importPence += gridImport[i] * getImportRate(tariff, i);
     exportPence += gridExport[i] * getExportRate(tariff, i);
   }
-  const annualImport = Math.round((importPence / 100) * 365);
-  const annualExport = Math.round((exportPence / 100) * 365);
-  const annualStanding = Math.round((tariff.standingCharge / 100) * 365);
-  return { annualImport, annualExport, annualStanding, annualNet: annualImport + annualStanding - annualExport };
+  return { importPence, exportPence };
 }
 
 function isCompatible(exportTariff, importTariff) {
@@ -512,70 +715,175 @@ async function lookupPostcode(postcode) {
 // ---------------------------------------------------------------------------
 // REGIONAL ESTIMATES
 // ---------------------------------------------------------------------------
-const sunHours = {
-  "scotland": 2.7, "north-england": 2.9, "midlands": 3.2,
-  "south-england": 3.5, "southwest": 3.7, "wales": 3.1
-};
-
 function estimateDailyConsumption(bedrooms, houseSize) {
   return Math.max(5, bedrooms * 3.5 + (houseSize - 80) * 0.02);
 }
 
-function estimateDailyGeneration(solarKwp, location) {
-  return solarKwp * (sunHours[location] || 3.0);
-}
-
 // ---------------------------------------------------------------------------
-// MAIN ENGINE
+// MAIN ENGINE (v4.0 — seasonal × strategy × heat pump)
 // ---------------------------------------------------------------------------
-function runEngine(bundledTariffs, importTariffs, exportTariffs, houseSize, bedrooms, solarKwp, batteryKwh, location) {
-  const dailyConsumption = estimateDailyConsumption(bedrooms, houseSize);
-  const dailyGeneration = estimateDailyGeneration(solarKwp, location);
-  const consumptionCurve = buildConsumptionCurve(dailyConsumption);
-  const solarCurve = buildSolarCurve(dailyGeneration);
+function runEngine(bundledTariffs, importTariffs, exportTariffs, houseSize, bedrooms, solarKwp, batteryKwh, location, heatPumpKw) {
+  const baseDailyConsumption = estimateDailyConsumption(bedrooms, houseSize);
+  const regionSunHours = MONTHLY_SUN_HOURS[location] || MONTHLY_SUN_HOURS["midlands"];
+  heatPumpKw = heatPumpKw || 0;
 
-  const noBatSim = simulateNoBattery(consumptionCurve, solarCurve);
+  // Calculate annual average daily generation for display
+  let totalGenDays = 0;
+  for (let m = 0; m < 12; m++) totalGenDays += regionSunHours[m] * DAYS_PER_MONTH[m];
+  const avgDailyGeneration = solarKwp * (totalGenDays / 365);
 
-  const bundledResults = bundledTariffs.map(tariff => {
+  // Representative mid-year curves for the summary chart (June)
+  const chartSolarCurve = buildSolarCurve(solarKwp * regionSunHours[5]);
+  let chartConsumptionCurve = buildConsumptionCurve(baseDailyConsumption * MONTHLY_CONSUMPTION_WEIGHT[5]);
+  if (heatPumpKw > 0) {
+    const hpJune = buildHeatPumpCurve(heatPumpKw * HEAT_PUMP_MONTHLY_KWH_PER_KW[5]);
+    chartConsumptionCurve = addCurves(chartConsumptionCurve, hpJune);
+  }
+
+  // ------------------------------------------------------------------
+  // Helper: simulate one month for a tariff + strategy, return daily cost
+  // ------------------------------------------------------------------
+  function simulateMonth(month, tariff, strategy) {
+    const dailySolarKwh = solarKwp * regionSunHours[month];
+    const solarCurve = buildSolarCurve(dailySolarKwh);
+    let consumptionCurve = buildConsumptionCurve(baseDailyConsumption * MONTHLY_CONSUMPTION_WEIGHT[month]);
+
+    // Add heat pump demand if present
+    if (heatPumpKw > 0) {
+      const hpDailyKwh = heatPumpKw * HEAT_PUMP_MONTHLY_KWH_PER_KW[month];
+      consumptionCurve = addCurves(consumptionCurve, buildHeatPumpCurve(hpDailyKwh));
+    }
+
+    const noBatSim = simulateNoBattery(consumptionCurve, solarCurve);
+
     let sim;
     if (batteryKwh > 0) {
-      const rawSim = simulateBattery(consumptionCurve, solarCurve, batteryKwh, tariff.batteryChargeWindow || null);
+      const chargeWindow = tariff.batteryChargeWindow || null;
+      const peakExportWindow = findPeakExportWindow(tariff);
+      const rawSim = simulateBattery(consumptionCurve, solarCurve, batteryKwh, strategy, chargeWindow, peakExportWindow);
       sim = applyBatteryEffectiveness(noBatSim, rawSim);
     } else {
       sim = noBatSim;
     }
-    const costs = calculateBundledCost(tariff, sim.gridImport, sim.gridExport);
-    return { ...tariff, ...costs, sim };
+
+    return calculateDailyCostPence(tariff, sim.gridImport, sim.gridExport);
+  }
+
+  // ------------------------------------------------------------------
+  // Helper: run a full year (12 months) for a tariff + strategy
+  // ------------------------------------------------------------------
+  function simulateYear(tariff, strategy) {
+    let annualImportPence = 0, annualExportPence = 0;
+    for (let m = 0; m < 12; m++) {
+      const daily = simulateMonth(m, tariff, strategy);
+      annualImportPence += daily.importPence * DAYS_PER_MONTH[m];
+      annualExportPence += daily.exportPence * DAYS_PER_MONTH[m];
+    }
+    return { annualImportPence, annualExportPence };
+  }
+
+  // Default strategy for tariffs without battery or for generic sims
+  const defaultStrategy = STRATEGIES["self-consumption"];
+
+  // ==================================================================
+  // BUNDLED TARIFFS (default view) — strategy optimisation
+  // ==================================================================
+  const bundledResults = bundledTariffs.map(tariff => {
+    let bestNet = Infinity;
+    let bestResult = null;
+    let bestStrategy = defaultStrategy;
+
+    const strategiesToTest = batteryKwh > 0 ? STRATEGY_LIST : [defaultStrategy];
+
+    for (const strategy of strategiesToTest) {
+      const { annualImportPence, annualExportPence } = simulateYear(tariff, strategy);
+      const annualImport = Math.round(annualImportPence / 100);
+      const annualExport = Math.round(annualExportPence / 100);
+      const annualStanding = Math.round((tariff.standingCharge / 100) * 365);
+      const annualNet = annualImport + annualStanding - annualExport;
+
+      if (annualNet < bestNet) {
+        bestNet = annualNet;
+        bestResult = { annualImport, annualExport, annualStanding, annualNet };
+        bestStrategy = strategy;
+      }
+    }
+
+    return { ...tariff, ...bestResult, bestStrategy: batteryKwh > 0 ? bestStrategy : null };
   });
   bundledResults.sort((a, b) => a.annualNet - b.annualNet);
 
+  // ==================================================================
+  // IMPORT TARIFFS (split view) — strategy optimisation
+  // ==================================================================
   const importResults = importTariffs.map(tariff => {
-    let sim;
-    if (batteryKwh > 0) {
-      const rawSim = simulateBattery(consumptionCurve, solarCurve, batteryKwh, tariff.batteryChargeWindow || null);
-      sim = applyBatteryEffectiveness(noBatSim, rawSim);
-    } else {
-      sim = noBatSim;
+    let bestTotal = Infinity;
+    let bestResult = null;
+    let bestStrategy = defaultStrategy;
+
+    const strategiesToTest = batteryKwh > 0 ? STRATEGY_LIST : [defaultStrategy];
+
+    for (const strategy of strategiesToTest) {
+      const { annualImportPence } = simulateYear(tariff, strategy);
+      const annualImport = Math.round(annualImportPence / 100);
+      const annualStanding = Math.round((tariff.standingCharge / 100) * 365);
+      const annualImportTotal = annualImport + annualStanding;
+
+      if (annualImportTotal < bestTotal) {
+        bestTotal = annualImportTotal;
+        bestResult = { annualImport, annualStanding, annualImportTotal };
+        bestStrategy = strategy;
+      }
     }
-    const costs = calculateImportCost(tariff, sim.gridImport);
-    var noData = tariff.standingCharge === 0 && costs.annualImport === 0;
-    return { ...tariff, ...costs, sim, noData };
+
+    const noData = tariff.standingCharge === 0 && bestResult.annualImport === 0;
+    return { ...tariff, ...bestResult, bestStrategy: batteryKwh > 0 ? bestStrategy : null, noData };
   }).filter(function(t) { return !t.noData; });
   importResults.sort((a, b) => a.annualImportTotal - b.annualImportTotal);
 
-  const genericSim = batteryKwh > 0
-    ? applyBatteryEffectiveness(noBatSim, simulateBattery(consumptionCurve, solarCurve, batteryKwh, null))
-    : noBatSim;
+  // ==================================================================
+  // EXPORT TARIFFS (split view) — generic sim, no strategy optimisation
+  // ==================================================================
   const exportResults = exportTariffs.map(tariff => {
-    const earnings = calculateExportEarnings(tariff, genericSim.gridExport);
-    return { ...tariff, ...earnings };
+    let annualExportPence = 0;
+    for (let m = 0; m < 12; m++) {
+      const dailySolarKwh = solarKwp * regionSunHours[m];
+      const solarCurve = buildSolarCurve(dailySolarKwh);
+      let consumptionCurve = buildConsumptionCurve(baseDailyConsumption * MONTHLY_CONSUMPTION_WEIGHT[m]);
+      if (heatPumpKw > 0) {
+        consumptionCurve = addCurves(consumptionCurve, buildHeatPumpCurve(heatPumpKw * HEAT_PUMP_MONTHLY_KWH_PER_KW[m]));
+      }
+
+      const noBatSim = simulateNoBattery(consumptionCurve, solarCurve);
+      let sim;
+      if (batteryKwh > 0) {
+        const rawSim = simulateBattery(consumptionCurve, solarCurve, batteryKwh, defaultStrategy, null, null);
+        sim = applyBatteryEffectiveness(noBatSim, rawSim);
+      } else {
+        sim = noBatSim;
+      }
+
+      let dailyExportPence = 0;
+      for (let i = 0; i < 48; i++) {
+        dailyExportPence += sim.gridExport[i] * getExportRate(tariff, i);
+      }
+      annualExportPence += dailyExportPence * DAYS_PER_MONTH[m];
+    }
+
+    const annualExport = Math.round(annualExportPence / 100);
+    return { ...tariff, annualExport };
   });
   exportResults.sort((a, b) => b.annualExport - a.annualExport);
 
   return {
     bundledResults, importResults, exportResults,
-    inputs: { dailyConsumption, dailyGeneration, batteryKwh },
-    curves: { consumptionCurve, solarCurve }
+    inputs: {
+      dailyConsumption: baseDailyConsumption,
+      dailyGeneration: avgDailyGeneration,
+      batteryKwh,
+      heatPumpKw
+    },
+    curves: { consumptionCurve: chartConsumptionCurve, solarCurve: chartSolarCurve }
   };
 }
 
@@ -618,6 +926,12 @@ function renderSummary(inputs, curves, source) {
   var sourceNote = source === "fallback"
     ? '<p style="font-size:0.78rem;background:#fff9c4;border:1px solid #f0e060;border-radius:6px;padding:8px 12px;margin-bottom:16px;">&#9888; Could not reach the rate database &mdash; showing estimated rates. Results may not reflect the latest prices.</p>'
     : "";
+  var hpNote = inputs.heatPumpKw > 0
+    ? '<div style="flex:1;min-width:100px;text-align:center;padding:10px;background:white;border-radius:8px;">\
+<div style="font-size:1.25rem;font-weight:700;color:#e07020;">' + inputs.heatPumpKw + ' kW</div>\
+<div style="font-size:0.75rem;color:#999;">Heat pump</div>\
+</div>'
+    : "";
   return '\
 <div style="background:#f7f9fa;border-radius:12px;padding:18px;margin-bottom:24px;">\
 ' + sourceNote + '\
@@ -625,18 +939,20 @@ function renderSummary(inputs, curves, source) {
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">\
 <div style="flex:1;min-width:100px;text-align:center;padding:10px;background:white;border-radius:8px;">\
 <div style="font-size:1.25rem;font-weight:700;color:#1a3a4a;">' + inputs.dailyConsumption.toFixed(1) + ' kWh</div>\
-<div style="font-size:0.75rem;color:#999;">Daily consumption</div>\
+<div style="font-size:0.75rem;color:#999;">Avg daily consumption</div>\
 </div>\
 <div style="flex:1;min-width:100px;text-align:center;padding:10px;background:white;border-radius:8px;">\
 <div style="font-size:1.25rem;font-weight:700;color:#f4a261;">' + inputs.dailyGeneration.toFixed(1) + ' kWh</div>\
-<div style="font-size:0.75rem;color:#999;">Solar generation</div>\
+<div style="font-size:0.75rem;color:#999;">Avg solar generation</div>\
 </div>\
 <div style="flex:1;min-width:100px;text-align:center;padding:10px;background:white;border-radius:8px;">\
 <div style="font-size:1.25rem;font-weight:700;color:#2a7a6a;">' + inputs.batteryKwh + ' kWh</div>\
 <div style="font-size:0.75rem;color:#999;">Battery capacity</div>\
 </div>\
+' + hpNote + '\
 </div>\
 ' + renderProfileChart(curves.consumptionCurve, curves.solarCurve) + '\
+<p style="font-size:0.72rem;color:#bbb;margin:8px 0 0;text-align:center;">Profile shown for a typical June day. Annual costs use 12 monthly simulations.</p>\
 </div>';
 }
 
@@ -677,6 +993,9 @@ function renderBundledView(bundledResults) {
     var isBest = i === 0;
     var extraCost = i > 0 ? '<div class="tariff-extra-cost">&pound;' + (t.annualNet - best.annualNet) + ' more per year than best</div>' : "";
     var tooltip = buildCostTooltip(t.annualImport, t.annualStanding, t.standingCharge, t.annualImport + t.annualStanding);
+    var strategyLine = t.bestStrategy
+      ? '<div style="font-size:0.75rem;color:#2a7a6a;margin-top:6px;font-style:italic;">&#9889; Best with: <strong>' + t.bestStrategy.label + '</strong> &mdash; ' + t.bestStrategy.shortDesc + '</div>'
+      : "";
     return '\
 <div class="tariff-card' + (isBest ? " tariff-card--best" : "") + '">\
 ' + (isBest ? '<div class="tariff-badge">Best Match</div>' : "") + '\
@@ -693,6 +1012,7 @@ function renderBundledView(bundledResults) {
 </div>\
 </div>\
 ' + (t.equipment ? '<div class="tariff-equipment">&#9889; ' + t.equipment + '</div>' : "") + '\
+' + strategyLine + '\
 ' + extraCost + '\
 <a href="' + t.link + '" target="_blank" rel="noopener">View tariff &rarr;</a>\
 </div>';
@@ -705,6 +1025,9 @@ function renderBundledView(bundledResults) {
 function renderSplitView(importResults, exportResults) {
   var importCardsHTML = importResults.map(function(t, i) {
     var tooltip = buildCostTooltip(t.annualImport, t.annualStanding, t.standingCharge, t.annualImportTotal);
+    var strategyLine = t.bestStrategy
+      ? '<div style="font-size:0.72rem;color:#2a7a6a;margin-top:4px;font-style:italic;">&#9889; ' + t.bestStrategy.label + '</div>'
+      : "";
     return '\
 <div class="tariff-card' + (i === 0 ? " tariff-card--best" : "") + '">\
 ' + (i === 0 ? '<div class="tariff-badge">Cheapest</div>' : "") + '\
@@ -720,6 +1043,7 @@ function renderSplitView(importResults, exportResults) {
 </div>\
 </div>\
 ' + (t.equipment ? '<div class="tariff-equipment">&#9889; ' + t.equipment + '</div>' : "") + '\
+' + strategyLine + '\
 <a href="' + t.link + '" target="_blank" rel="noopener">View tariff &rarr;</a>\
 </div>';
   }).join("");
@@ -791,7 +1115,7 @@ function renderWithView(isSplit) {
 ' + toggleHTML + '\
 <div id="results-content">' + contentHTML + '</div>\
 <p style="font-size:0.75rem;color:#bbb;margin-top:24px;text-align:center;line-height:1.6;">\
-&#9888; Estimates use typical UK household consumption profiles and average regional solar irradiance.\
+&#9888; Estimates use 12 monthly simulations with PVGIS-validated regional solar data and seasonal consumption profiles.\
 Battery round-trip efficiency assumed at 90%. Always confirm rates directly with suppliers.\
 </p>';
   var toggle = document.getElementById("view-toggle");

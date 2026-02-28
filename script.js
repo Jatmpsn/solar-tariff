@@ -53,6 +53,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // --- Heat pump toggle ---
+  var heatPumpToggle = document.getElementById("heat-pump-toggle");
+  var heatPumpFields = document.getElementById("heat-pump-fields");
+
+  heatPumpToggle.addEventListener("change", function () {
+    heatPumpFields.style.display = this.checked ? "block" : "none";
+  });
+
   // --- Postcode error helpers ---
   var postcodeInput = document.getElementById("postcode");
   var postcodeError = document.getElementById("postcode-error");
@@ -87,6 +95,11 @@ document.addEventListener("DOMContentLoaded", function () {
             data.formValues.batteryKwh;
         }
         postcodeInput.value = data.formValues.postcode || "";
+        if (data.formValues.heatPumpKw > 0) {
+          heatPumpToggle.checked = true;
+          heatPumpToggle.dispatchEvent(new Event("change"));
+          document.getElementById("heat-pump-size").value = data.formValues.heatPumpKw;
+        }
       }
     } catch (e) {
       /* ignore parse errors */
@@ -108,6 +121,9 @@ document.addEventListener("DOMContentLoaded", function () {
       var batteryKwh = noBatteryCheckbox.checked
         ? 0
         : parseFloat(document.getElementById("battery-size").value) || 0;
+      var heatPumpKw = heatPumpToggle.checked
+        ? parseFloat(document.getElementById("heat-pump-size").value) || 0
+        : 0;
       // Validate postcode before closing sidebar
       clearPostcodeError();
       postcodeRegion.textContent = "";
@@ -168,7 +184,8 @@ document.addEventListener("DOMContentLoaded", function () {
         bedrooms,
         solarKwp,
         batteryKwh,
-        location
+        location,
+        heatPumpKw
       );
 
       // Store in sessionStorage
@@ -182,6 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
             bedrooms: bedrooms,
             solarKwp: solarKwp,
             batteryKwh: batteryKwh,
+            heatPumpKw: heatPumpKw,
             postcode: postcodeValue,
             location: location,
           },

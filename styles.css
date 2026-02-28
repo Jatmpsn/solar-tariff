@@ -335,8 +335,9 @@ button[type="submit"]:hover {
   background-color: #35897a;
 }
 
-/* No-battery toggle */
-.no-battery-toggle {
+/* No-battery / heat-pump toggles */
+.no-battery-toggle,
+.heat-pump-toggle {
   flex-direction: row !important;
   align-items: center;
   gap: 10px;
@@ -346,9 +347,14 @@ button[type="submit"]:hover {
   color: #666;
 }
 
-.no-battery-toggle input[type="checkbox"] {
+.no-battery-toggle input[type="checkbox"],
+.heat-pump-toggle input[type="checkbox"] {
   width: auto;
   accent-color: var(--color-primary);
+}
+
+.heat-pump-section {
+  margin-top: 4px;
 }
 
 #battery-group {

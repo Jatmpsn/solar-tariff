@@ -126,6 +126,22 @@
             I don't have a battery system
           </label>
 
+          <div class="heat-pump-section">
+            <label class="heat-pump-toggle">
+              <input type="checkbox" id="heat-pump-toggle" />
+              I have a heat pump
+            </label>
+            <div id="heat-pump-fields" style="display:none;margin-top:4px;">
+              <label>Heat Pump Size (kW)
+                <select id="heat-pump-size">
+                  <option value="5">5 kW (small home)</option>
+                  <option value="8" selected>8 kW (typical home)</option>
+                  <option value="12">12 kW (large home)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
           <label>Postcode
             <input type="text" id="postcode" placeholder="e.g. SW1A 1AA" autocomplete="postal-code" />
             <span id="postcode-error" class="field-error"></span>
